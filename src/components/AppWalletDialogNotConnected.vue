@@ -82,7 +82,7 @@ export default {
       this.dialog = false;
       setTimeout(() => {
         this.setConnected(address.toString());
-      }, 100);
+      }, 150);
     },
     onDisconnect() {
       Vue.prototype.$wallet = null;
