@@ -16,14 +16,7 @@
       class="my-6"
     />
 
-    <div class="d-flex">
-      <v-btn
-        block
-        @click="$store.commit('setWalletDialog', true)"
-      >
-        Connect you wallet
-      </v-btn>
-    </div>
+    <app-wallet-btn />
 
     <v-divider
       class="my-6"
@@ -53,12 +46,6 @@
         label="Name"
         required
       />
-      <v-text-field
-        v-model="market"
-        outlined
-        dense
-        label="Serum market"
-      />
 
       <v-text-field
         v-model="supply"
@@ -68,6 +55,7 @@
         label="Supply"
         required
       />
+
       <v-text-field
         v-model="decimals"
         outlined
@@ -77,6 +65,7 @@
         label="Decimals"
         required
       />
+
       <div class="d-flex">
         <v-spacer />
         <v-btn
@@ -92,12 +81,13 @@
 </template>
 
 <script>
+import AppWalletBtn from './AppWalletBtn.vue';
+
 export default {
+  components: { AppWalletBtn },
   data: () => ({
-    connected: true,
     valid: false,
     name: '',
-    market: '',
     decimals: 0,
     supply: 1,
     nameRules: [
@@ -105,6 +95,13 @@ export default {
       (v) => v.length <= 10 || 'Name must be less than 10 characters',
     ],
   }),
+  computed: {
+    connected: {
+      get() {
+        return this.$store.state.wallet.connected;
+      },
+    },
+  },
 };
 </script>
 

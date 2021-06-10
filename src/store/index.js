@@ -1,25 +1,14 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import { set } from '../utils/vuex';
+import wallet from './modules/wallet';
+import app from './modules/app';
 
 Vue.use(Vuex);
 
-const state = {
-  walletDialog: false,
-};
-
-const mutations = {
-  setWalletDialog: set('walletDialog'),
-
-};
-
-const actions = {};
-
 export default new Vuex.Store({
-  state,
-  mutations,
-  actions,
   modules: {
+    wallet,
+    app,
   },
 });
