@@ -7,7 +7,13 @@
       :src="require('../assets/logo.svg')"
       class="my-5"
       contain
-      height="200"
+      height="110"
+    />
+    <h1 class="text-h4 text-center">
+      NFT Creator
+    </h1>
+    <v-divider
+      class="my-6"
     />
 
     <div class="d-flex">
