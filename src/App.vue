@@ -3,18 +3,18 @@
     <v-main>
       <v-container fluid>
         <router-view />
-        <wallet-dialog />
+        <app-wallet-dialog />
       </v-container>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import WalletDialog from './components/WalletDialog.vue';
+import AppWalletDialog from './components/AppWalletDialog.vue';
 
 export default {
   name: 'App',
-  components: { WalletDialog },
+  components: { AppWalletDialog },
   data: () => ({
     //
   }),
