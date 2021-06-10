@@ -1,15 +1,15 @@
 <template>
-  <hello-world />
+  <n-f-t-creator />
 </template>
 
 <script>
-import HelloWorld from '../components/HelloWorld.vue';
+import NFTCreator from '../components/NFTCreator.vue';
 
 export default {
   name: 'Home',
 
   components: {
-    HelloWorld,
+    NFTCreator,
   },
 };
 </script>
