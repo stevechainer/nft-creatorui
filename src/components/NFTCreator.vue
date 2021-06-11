@@ -24,7 +24,6 @@
 
     <v-form
       v-model="valid"
-      :disabled="!connected"
     >
       <v-file-input
         accept="image/*"
@@ -69,9 +68,8 @@
       <div class="d-flex">
         <v-spacer />
         <v-btn
-          type="submit"
-          :disabled="!valid"
           color="primary"
+          @click="create"
         >
           Create
         </v-btn>
@@ -81,6 +79,7 @@
 </template>
 
 <script>
+import { createCollectible } from '../api/collectibles.api';
 import AppWalletBtn from './AppWalletBtn.vue';
 
 export default {
@@ -100,6 +99,15 @@ export default {
       get() {
         return this.$store.state.wallet.connected;
       },
+    },
+  },
+  methods: {
+    async create() {
+      const collectible = {
+        name: this.name,
+      };
+      const r = await createCollectible(collectible);
+      console.log('~ r', r);
     },
   },
 };
