@@ -1,14 +1,8 @@
 <template>
   <v-container
     fluid
-    style="max-width:400px;"
+    style="max-width:500px;"
   >
-    <v-img
-      :src="require('../assets/logo.svg')"
-      class="my-5"
-      contain
-      height="110"
-    />
     <h1 class="text-h4 text-center">
       NFT Creator
     </h1>
