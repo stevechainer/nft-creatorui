@@ -1,24 +1,75 @@
 <template>
   <v-form
     v-model="valid"
-    lazy-validation
-    :disabled="!connected"
   >
+    <div class="mb-6">
+      <v-sheet
+        outlined
+        rounded
+        class="px-12 py-10  d-flex justify-center align-center"
+        style=" position:relative;"
+        min-height="200"
+      >
+        <v-btn
+          v-if="file"
+          icon
+          absolute
+          right
+          top
+          small
+          @click.stop="file = null"
+        >
+          <v-icon small>
+            mdi-close
+          </v-icon>
+        </v-btn>
+
+        <div
+          v-if="!file"
+          class="text-center"
+        >
+          <p>
+            PNG, JPG, GIF. Up to 2mb.
+          </p>
+          <v-btn
+            @click="openFileExplorer"
+          >
+            Choose File
+          </v-btn>
+        </div>
+
+        <img
+          :src="filePreview"
+          style="max-width:100%;max-height:300px;"
+          class="rounded"
+        >
+      </v-sheet>
+
+      <div class="text-caption error--text pl-3">
+        <div
+          v-for="i in fileErrors"
+          :key="i"
+        >
+          {{ i }}
+        </div>
+      </div>
+    </div>
+
     <v-file-input
+      ref="file"
       v-model="file"
+      style="position:absolute; visibility:hidden;"
       accept=".png,.gif,.jpg"
-      outlined
-      dense
-      label="Image/GIF"
-      show-size
-      truncate-length="25"
       prepend-icon=""
-      prepend-inner-icon="mdi-paperclip"
+      prepend-inner-icon=""
       required
-      :error-messages="fileErrors"
       @input="$v.file.$touch()"
       @blur="$v.file.$touch()"
-    />
+    >
+      <template #default>
+        ici
+      </template>
+    </v-file-input>
 
     <v-text-field
       v-model="name"
@@ -80,7 +131,7 @@ export default {
   data: () => ({
     valid: false,
     name: '',
-    supply: 1,
+    supply: null,
     file: null,
     alert: null,
   }),
@@ -99,7 +150,7 @@ export default {
       const errors = [];
       if (!this.$v.name.$dirty) return errors;
       if (!this.$v.name.maxLength) {
-        errors.push('Name must be at most 10 characters long');
+        errors.push('Name must be at most 50 characters long');
       }
       if (!this.$v.name.minLength) {
         errors.push('Name must be at least 3 characters long');
@@ -130,9 +181,6 @@ export default {
       if (!this.$v.file.required) {
         errors.push('File is required.');
       }
-      if (!this.$v.fileSize.required) {
-        errors.push('File is required.');
-      }
       if (!this.$v.fileSize.integer) {
         errors.push('File size must be an integer');
       }
@@ -144,6 +192,10 @@ export default {
     fileSize() {
       if (!this.file || !this.file.size) return null;
       return this.file.size;
+    },
+    filePreview() {
+      if (!this.file || !this.file.size) return '';
+      return URL.createObjectURL(this.file);
     },
   },
   methods: {
@@ -172,9 +224,12 @@ export default {
         };
       }
     },
+    openFileExplorer() {
+      this.$refs.file.$refs.input.click();
+    },
   },
   validations: {
-    name: { required, maxLength: maxLength(10), minLength: minLength(3) },
+    name: { required, maxLength: maxLength(50), minLength: minLength(3) },
     supply: { required, integer, between: between(1, 1e12) },
     file: { required },
     fileSize: { required, integer, between: between(1, 2e6) },
