@@ -22,94 +22,16 @@
       class="my-6"
     />
 
-    <v-form
-      v-model="valid"
-    >
-      <v-file-input
-        accept="image/*"
-        outlined
-        dense
-        label="Media file"
-        show-size
-        truncate-length="25"
-        prepend-icon=""
-        prepend-inner-icon="mdi-paperclip"
-        required
-      />
-
-      <v-text-field
-        v-model="name"
-        outlined
-        dense
-        :rules="nameRules"
-        label="Name"
-        required
-      />
-
-      <v-text-field
-        v-model="supply"
-        outlined
-        dense
-        type="number"
-        label="Supply"
-        required
-      />
-
-      <v-text-field
-        v-model="decimals"
-        outlined
-        dense
-        disabled
-        type="number"
-        label="Decimals"
-        required
-      />
-
-      <div class="d-flex">
-        <v-spacer />
-        <v-btn
-          color="primary"
-          @click="create"
-        >
-          Create
-        </v-btn>
-      </div>
-    </v-form>
+    <n-f-t-creator-form />
   </v-container>
 </template>
 
 <script>
-import { createCollectible } from '../api/collectibles.api';
 import AppWalletBtn from './AppWalletBtn.vue';
+import NFTCreatorForm from './NFTCreatorForm.vue';
 
 export default {
-  components: { AppWalletBtn },
-  data: () => ({
-    valid: false,
-    name: '',
-    decimals: 0,
-    supply: 1,
-    nameRules: [
-      (v) => !!v || 'Name is required',
-      (v) => v.length <= 10 || 'Name must be less than 10 characters',
-    ],
-  }),
-  computed: {
-    connected: {
-      get() {
-        return this.$store.state.wallet.connected;
-      },
-    },
-  },
-  methods: {
-    async create() {
-      const collectible = {
-        name: this.name,
-      };
-      const r = await createCollectible(collectible);
-      console.log('~ r', r);
-    },
-  },
+  components: { AppWalletBtn, NFTCreatorForm },
 };
 </script>
 
