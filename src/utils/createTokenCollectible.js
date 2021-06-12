@@ -8,17 +8,16 @@ const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ
 const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
 const DECIMALS = 0;
 
-export default async function createNFT(connection, wallet, supply) {
-  const mintAccount = Keypair.generate();
-  const authority = new PublicKey(wallet.publicKey.toString());
-  const associatedAddress = await Token.getAssociatedTokenAddress(
-    ASSOCIATED_TOKEN_PROGRAM_ID,
-    TOKEN_PROGRAM_ID,
-    mintAccount.publicKey,
-    authority,
-  );
-
+export default async function createTokenCollectible(connection, wallet, supply) {
   try {
+    const mintAccount = Keypair.generate();
+    const authority = new PublicKey(wallet.publicKey.toString());
+    const associatedAddress = await Token.getAssociatedTokenAddress(
+      ASSOCIATED_TOKEN_PROGRAM_ID,
+      TOKEN_PROGRAM_ID,
+      mintAccount.publicKey,
+      authority,
+    );
     const transaction = new Transaction();
     const createTokenBalanceNeeded = await Token.getMinBalanceRentForExemptMint(connection);
     transaction.add(
@@ -71,19 +70,28 @@ export default async function createNFT(connection, wallet, supply) {
     );
 
     transaction.feePayer = authority;
-    console.log('Getting recent blockhash');
+
+    // Getting recent blockhash
     transaction.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
-    console.log('Partial sign transaction');
+
+    // Partial sign transaction
     transaction.partialSign(mintAccount);
-    console.log('Sending signature request to wallet');
+
+    // Sending signature request to wallet
     const signed = await wallet.signTransaction(transaction);
-    console.log('Got signature, submitting transaction');
+
+    // Got signature, submitting transaction
     const signature = await connection.sendRawTransaction(signed.serialize());
-    console.log(`Submitted transaction ${signature}, awaiting confirmation`);
-    await connection.confirmTransaction(signature, 'finalized');
-    console.log(`Transaction ${signature} confirmed`);
+
+    // Awaiting confirmation
+    await connection.confirmTransaction(signature, 'confirmed');
+
+    return {
+      address: mintAccount.publicKey,
+      authority,
+      supply,
+    };
   } catch (e) {
-    console.error(`Error: ${e.message}`, e);
+    throw new Error(e.message);
   }
-  return mintAccount.publicKey;
 }

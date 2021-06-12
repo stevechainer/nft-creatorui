@@ -7,6 +7,5 @@ const httpClient = axios.create({
     'Content-Type': 'application/json',
   },
 });
-console.log('~ process.env.VUE_APP_BASE_URL', process.env.VUE_APP_BASE_URL);
 
 export default httpClient;
