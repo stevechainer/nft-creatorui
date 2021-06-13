@@ -1,0 +1,39 @@
+<template>
+  <v-footer
+    app
+    absolute
+    color="transparent"
+    height="auto"
+    class="mb-2"
+  >
+    <div class="d-flex justify-center align-center flex-grow-1">
+      <v-img
+        src="/logos/nft_creator/powered_by_sonar.svg"
+        contain
+        height="40"
+        width="110"
+        class="mx-1 flex-grow-0"
+      />
+      <v-divider
+        vertical
+        class="mx-2"
+      />
+      <v-btn
+        icon
+        href="https://github.com/sonar-watch/nft-creator-frontend"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <v-icon>
+          mdi-github
+        </v-icon>
+      </v-btn>
+    </div>
+  </v-footer>
+</template>
+
+<script>
+export default {
+  name: 'AppFooter',
+};
+</script>

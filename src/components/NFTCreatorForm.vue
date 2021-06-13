@@ -4,12 +4,13 @@
     v-model="valid"
     @submit.prevent="submitHandler"
   >
-    <div class="mb-6">
+    <div>
       <v-sheet
         outlined
         rounded
         class="px-12 py-10 mb-1 d-flex justify-center align-center"
         style=" position:relative;"
+        :style="{borderColor: !fileError?'':'#ff5252'}"
         min-height="200"
       >
         <v-btn
@@ -48,11 +49,11 @@
       </v-sheet>
 
       <div
-        class="text-caption error--text pl-3"
+        class="text-caption error--text pl-3 mb-2"
         style="min-height:14px; line-height:12px; overflow:hidden;"
       >
         <v-scroll-y-transition>
-          <div v-if="fileError !== ''">
+          <div v-if="fileError">
             {{ fileError }}
           </div>
         </v-scroll-y-transition>
@@ -75,8 +76,21 @@
       outlined
       dense
       label="Name"
+      name="name"
       required
       :rules="nameRules"
+      autocomplete="off"
+    />
+
+    <v-text-field
+      v-model="description"
+      outlined
+      dense
+      label="Description"
+      name="description"
+      required
+      :rules="descriptionRules"
+      autocomplete="off"
     />
 
     <v-text-field
@@ -89,6 +103,7 @@
       min="1"
       max="1e12"
       :rules="supplyRules"
+      autocomplete="off"
     />
 
     <div class="d-flex">
@@ -126,10 +141,12 @@ export default {
   data: () => ({
     valid: true,
     name: '',
+    description: '',
     supply: '',
     file: null,
     alerts: [],
     nameRules: [],
+    descriptionRules: [],
     supplyRules: [],
     fileRules: [],
     loading: false,
@@ -151,7 +168,7 @@ export default {
         const r = rule(this.file);
         if (r !== true) return r;
       }
-      return '';
+      return null;
     },
     fileSize() {
       if (!this.file || !this.file.size) return null;
@@ -168,6 +185,9 @@ export default {
         (v) => !!v || 'Name is required',
         (v) => (v && v.length <= 50) || 'Name must be less than 50 characters',
         (v) => (v && v.length >= 3) || 'Name must be at least 3 characters',
+      ];
+      this.descriptionRules = [
+        (v) => (v && v.length <= 300) || 'Description must be less than 300 characters',
       ];
       this.supplyRules = [
         (v) => !!v || 'Supply is required',
@@ -190,7 +210,7 @@ export default {
     async create() {
       this.loading = true;
       try {
-        const tokenCollectible = await createTokenCollectible(this.$connection, this.$wallet, 20);
+        const tokenCollectible = await createTokenCollectible(this.$connection, this.$wallet, this.supply);
         this.alerts.push({
           type: 'info',
           msg: `Token created: ${tokenCollectible.address.toString()}`,
