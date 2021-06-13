@@ -1,12 +1,14 @@
 <template>
   <v-form
+    ref="form"
     v-model="valid"
+    @submit.prevent="submitHandler"
   >
     <div class="mb-6">
       <v-sheet
         outlined
         rounded
-        class="px-12 py-10  d-flex justify-center align-center"
+        class="px-12 py-10 mb-1 d-flex justify-center align-center"
         style=" position:relative;"
         min-height="200"
       >
@@ -45,13 +47,15 @@
         >
       </v-sheet>
 
-      <div class="text-caption error--text pl-3">
-        <div
-          v-for="i in fileErrors"
-          :key="i"
-        >
-          {{ i }}
-        </div>
+      <div
+        class="text-caption error--text pl-3"
+        style="min-height:14px; line-height:12px; overflow:hidden;"
+      >
+        <v-scroll-y-transition>
+          <div v-if="fileError !== ''">
+            {{ fileError }}
+          </div>
+        </v-scroll-y-transition>
       </div>
     </div>
 
@@ -63,23 +67,16 @@
       prepend-icon=""
       prepend-inner-icon=""
       required
-      @input="$v.file.$touch()"
-      @blur="$v.file.$touch()"
-    >
-      <template #default>
-        ici
-      </template>
-    </v-file-input>
+      :rules="fileRules"
+    />
 
     <v-text-field
       v-model="name"
       outlined
       dense
-      required
       label="Name"
-      :error-messages="nameErrors"
-      @input="$v.name.$touch()"
-      @blur="$v.name.$touch()"
+      required
+      :rules="nameRules"
     />
 
     <v-text-field
@@ -87,21 +84,19 @@
       outlined
       dense
       required
-      label="Fixed supply"
+      label="Supply"
       type="number"
       min="1"
       max="1e12"
-      :error-messages="supplyErrors"
-      @input="$v.supply.$touch()"
-      @blur="$v.supply.$touch()"
+      :rules="supplyRules"
     />
 
     <div class="d-flex">
       <v-spacer />
       <v-btn
         color="primary"
-        :disabled="!valid || !connected"
-        @click="create"
+        type="submit"
+        :disabled="!valid"
       >
         Create
       </v-btn>
@@ -118,22 +113,20 @@
 </template>
 
 <script>
-import { validationMixin } from 'vuelidate';
-import {
-  required, maxLength, minLength, between, integer,
-} from 'vuelidate/lib/validators';
 import { createCollectible } from '@/api/collectibles.api';
 import { createUpload } from '@/api/uploads.api';
 import createTokenCollectible from '../utils/createTokenCollectible';
 
 export default {
-  mixins: [validationMixin],
   data: () => ({
-    valid: false,
+    valid: true,
     name: '',
-    supply: null,
+    supply: '',
     file: null,
     alert: null,
+    nameRules: [],
+    supplyRules: [],
+    fileRules: [],
   }),
   computed: {
     connected: {
@@ -146,48 +139,13 @@ export default {
         return this.$store.state.wallet.connected;
       },
     },
-    nameErrors() {
-      const errors = [];
-      if (!this.$v.name.$dirty) return errors;
-      if (!this.$v.name.maxLength) {
-        errors.push('Name must be at most 50 characters long');
+    fileError() {
+      for (let i = 0; i < this.fileRules.length; i += 1) {
+        const rule = this.fileRules[i];
+        const r = rule(this.file);
+        if (r !== true) return r;
       }
-      if (!this.$v.name.minLength) {
-        errors.push('Name must be at least 3 characters long');
-      }
-      if (!this.$v.name.required) {
-        errors.push('Name is required.');
-      }
-      return errors;
-    },
-    supplyErrors() {
-      const errors = [];
-      if (!this.$v.supply.$dirty) return errors;
-      if (!this.$v.supply.between) {
-        errors.push('Supply must be between 1 and 1,000,000,000,000');
-      }
-      if (!this.$v.supply.integer) {
-        errors.push('Supply must be an integer');
-      }
-      if (!this.$v.supply.required) {
-        errors.push('Supply is required.');
-      }
-      return errors;
-    },
-    fileErrors() {
-      const errors = [];
-      if (!this.$v.file.$dirty) return errors;
-      console.log('~ this.file', this.file);
-      if (!this.$v.file.required) {
-        errors.push('File is required.');
-      }
-      if (!this.$v.fileSize.integer) {
-        errors.push('File size must be an integer');
-      }
-      if (!this.$v.fileSize.between) {
-        errors.push('File size must be at most 2 Mo.');
-      }
-      return errors;
+      return '';
     },
     fileSize() {
       if (!this.file || !this.file.size) return null;
@@ -199,8 +157,32 @@ export default {
     },
   },
   methods: {
+    submitHandler() {
+      this.nameRules = [
+        (v) => !!v || 'Name is required',
+        (v) => (v && v.length <= 50) || 'Name must be less than 50 characters',
+        (v) => (v && v.length >= 3) || 'Name must be at least 3 characters',
+      ];
+      this.supplyRules = [
+        (v) => !!v || 'Supply is required',
+        (v) => (v && v.length <= 1e12) || 'Supply must be less than 1,000,000,000,000',
+        (v) => (v && v.length >= 1) || 'Supply must be a least 1',
+        (v) => (v && Number.isInteger(parseFloat(v))) || 'Supply must be an integer',
+      ];
+      this.fileRules = [
+        (v) => !!v || 'File is required',
+        (v) => (v && v.size && v.size <= 2e6) || 'File must be less than 2mb',
+      ];
+      setTimeout(() => {
+        if (this.$refs.form.validate()) {
+          // eslint-disable-next-line no-alert
+          alert('submitted');
+        }
+      }, 100);
+
+      // this.create();
+    },
     async create() {
-      await this.$v.$touch();
       if (!this.valid) return;
       try {
         const tokenCollectible = await createTokenCollectible(this.$connection, this.$wallet, 20);
@@ -226,17 +208,6 @@ export default {
     },
     openFileExplorer() {
       this.$refs.file.$refs.input.click();
-    },
-  },
-  validations: {
-    name: { required, maxLength: maxLength(50), minLength: minLength(3) },
-    supply: { required, integer, between: between(1, 1e12) },
-    file: { required },
-    fileSize: { required, integer, between: between(1, 2e6) },
-    checkbox: {
-      checked(val) {
-        return val;
-      },
     },
   },
 };
