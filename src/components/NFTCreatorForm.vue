@@ -96,19 +96,24 @@
       <v-btn
         color="primary"
         type="submit"
-        :disabled="!valid"
+        :disabled="!valid || !connected || loading"
+        :loading="loading"
       >
         Create
       </v-btn>
     </div>
 
-    <v-alert
-      v-if="alert"
-      class="my-4"
-      :type="alert.type"
-    >
-      {{ alert.msg }}
-    </v-alert>
+    <div>
+      <v-alert
+        v-for="alert in alerts"
+        :key="alert.msg"
+        class="my-4"
+        :type="alert.type"
+        dense
+      >
+        {{ alert.msg }}
+      </v-alert>
+    </div>
   </v-form>
 </template>
 
@@ -123,10 +128,11 @@ export default {
     name: '',
     supply: '',
     file: null,
-    alert: null,
+    alerts: [],
     nameRules: [],
     supplyRules: [],
     fileRules: [],
+    loading: false,
   }),
   computed: {
     connected: {
@@ -175,17 +181,20 @@ export default {
       ];
       setTimeout(() => {
         if (this.$refs.form.validate()) {
-          // eslint-disable-next-line no-alert
-          alert('submitted');
+          this.create();
         }
       }, 100);
 
       // this.create();
     },
     async create() {
-      if (!this.valid) return;
+      this.loading = true;
       try {
         const tokenCollectible = await createTokenCollectible(this.$connection, this.$wallet, 20);
+        this.alerts.push({
+          type: 'info',
+          msg: `Token created: ${tokenCollectible.address.toString()}`,
+        });
         const formData = new FormData();
         formData.append('image', this.file);
         const uploadRes = await createUpload(formData);
@@ -198,13 +207,24 @@ export default {
           image: `ipfs://${uploadResData.IpfsHash}`,
           name: this.name,
         };
+        console.log('~ buildedCollectible', buildedCollectible);
+        this.alerts.push({
+          type: 'info',
+          msg: `Image uploaded: ${buildedCollectible.image}`,
+        });
         await createCollectible(buildedCollectible);
+        this.alerts.push({
+          type: 'info',
+          msg: 'Collectible created: ###',
+        });
       } catch (e) {
-        this.alert = {
+        console.log('~ e', e);
+        this.alerts.push({
           msg: e,
           type: 'error',
-        };
+        });
       }
+      this.loading = false;
     },
     openFileExplorer() {
       this.$refs.file.$refs.input.click();
