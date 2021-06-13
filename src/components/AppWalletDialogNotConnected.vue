@@ -77,7 +77,6 @@ export default {
       await this.wallet.connect();
     },
     onConnect(address) {
-      console.log('~ [Connected] address', address.toString());
       Vue.prototype.$wallet = this.wallet;
       this.dialog = false;
       setTimeout(() => {
@@ -87,7 +86,6 @@ export default {
     onDisconnect() {
       Vue.prototype.$wallet = null;
       this.setDisconnected();
-      console.log('~ [Disconnected]');
     },
   },
 };
