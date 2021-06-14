@@ -135,6 +135,13 @@
           dismissible
         >
           {{ alert.msg }}
+          <a
+            v-if="alert.link"
+            :href="alert.link"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="white--text text-decoration-none"
+          > {{ alert.link | address(20) }}</a>
         </v-alert>
       </v-slide-x-transition>
     </div>
@@ -197,9 +204,15 @@ export default {
         (v) => !!v || 'Name is required',
         (v) => (v && v.length <= 50) || 'Name must be less than 50 characters',
         (v) => (v && v.length >= 3) || 'Name must be at least 3 characters',
+        (v) => (v === '')
+            || (new RegExp("^[A-Za-z0-9'?!.,:áéíóúÁÉÍÓÚñÑäëïÖüÄËÏÖü_ -]+$", 'u').test(v))
+            || 'Use standard characters',
       ];
       this.descriptionRules = [
         (v) => (v.length <= 300) || 'Description must be less than 300 characters',
+        (v) => (v === '')
+            || (new RegExp("^[A-Za-z0-9'?!.,:áéíóúÁÉÍÓÚñÑäëïÖüÄËÏÖü_ -]+$", 'u').test(v))
+            || 'Use standard characters',
       ];
       this.supplyRules = [
         (v) => !!v || 'Supply is required',
@@ -239,18 +252,21 @@ export default {
           decimals: 0,
           image: `ipfs://${uploadResData.IpfsHash}`,
           name: this.name,
+          description: this.description || undefined,
         };
         console.log('~ buildedCollectible', buildedCollectible);
         this.alerts.push({
           id: Date.now() + Math.random(),
           type: 'info',
           msg: 'Image uploaded',
+          link: `https://gateway.pinata.cloud/ipfs/${uploadResData.IpfsHash}`,
         });
         await createCollectible(buildedCollectible);
         this.alerts.push({
           id: Date.now() + Math.random(),
           type: 'info',
-          msg: 'Collectible created: ###',
+          msg: 'Collectible created',
+          link: `https://sonar.watch/collectibles/${buildedCollectible.creator}`,
         });
       } catch (e) {
         console.log('~ e', e);
