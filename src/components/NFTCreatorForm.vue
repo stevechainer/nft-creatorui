@@ -86,12 +86,17 @@
       v-model="description"
       outlined
       dense
-      label="Description"
       name="description"
       required
       :rules="descriptionRules"
       autocomplete="off"
-    />
+    >
+      <template v-slot:label>
+        <div>
+          Description <small>(optional)</small>
+        </div>
+      </template>
+    </v-text-field>
 
     <v-text-field
       v-model="supply"
@@ -107,6 +112,7 @@
     />
 
     <div class="d-flex">
+      <n-f-t-creator-costs />
       <v-spacer />
       <v-btn
         color="primary"
@@ -119,15 +125,18 @@
     </div>
 
     <div>
-      <v-alert
-        v-for="alert in alerts"
-        :key="alert.msg"
-        class="my-4"
-        :type="alert.type"
-        dense
-      >
-        {{ alert.msg }}
-      </v-alert>
+      <v-slide-x-transition group>
+        <v-alert
+          v-for="alert in alerts"
+          :key="alert.id"
+          class="my-4 text-body-2"
+          :type="alert.type"
+          dense
+          dismissible
+        >
+          {{ alert.msg }}
+        </v-alert>
+      </v-slide-x-transition>
     </div>
   </v-form>
 </template>
@@ -136,8 +145,11 @@
 import { createCollectible } from '@/api/collectibles.api';
 import { createUpload } from '@/api/uploads.api';
 import createTokenCollectible from '../utils/createTokenCollectible';
+import NFTCreatorCosts from './NFTCreatorCosts.vue';
 
 export default {
+  name: 'NFTCreatorForm',
+  components: { NFTCreatorCosts },
   data: () => ({
     valid: true,
     name: '',
@@ -187,7 +199,7 @@ export default {
         (v) => (v && v.length >= 3) || 'Name must be at least 3 characters',
       ];
       this.descriptionRules = [
-        (v) => (v && v.length <= 300) || 'Description must be less than 300 characters',
+        (v) => (v.length <= 300) || 'Description must be less than 300 characters',
       ];
       this.supplyRules = [
         (v) => !!v || 'Supply is required',
@@ -212,6 +224,7 @@ export default {
       try {
         const tokenCollectible = await createTokenCollectible(this.$connection, this.$wallet, this.supply);
         this.alerts.push({
+          id: Date.now() + Math.random(),
           type: 'info',
           msg: `Token created: ${tokenCollectible.address.toString()}`,
         });
@@ -229,17 +242,20 @@ export default {
         };
         console.log('~ buildedCollectible', buildedCollectible);
         this.alerts.push({
+          id: Date.now() + Math.random(),
           type: 'info',
-          msg: `Image uploaded: ${buildedCollectible.image}`,
+          msg: 'Image uploaded',
         });
         await createCollectible(buildedCollectible);
         this.alerts.push({
+          id: Date.now() + Math.random(),
           type: 'info',
           msg: 'Collectible created: ###',
         });
       } catch (e) {
         console.log('~ e', e);
         this.alerts.push({
+          id: Date.now() + Math.random(),
           msg: e,
           type: 'error',
         });
