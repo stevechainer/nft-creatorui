@@ -1,6 +1,7 @@
 import { Connection } from '@solana/web3.js';
 
-// https://solana-api.projectserum.com
-const connection = new Connection('https://api.devnet.solana.com', 'confirmed');
+console.log('~ process.env.VUE_APP_WEB3', process.env.VUE_APP_WEB3);
+
+const connection = new Connection(process.env.VUE_APP_WEB3, 'confirmed');
 
 export default connection;
