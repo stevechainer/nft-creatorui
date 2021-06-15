@@ -1,6 +1,7 @@
 <template>
   <v-btn
     block
+    color="primary"
     @click="$store.commit('app/setWalletDialog', true)"
   >
     <span v-if="!connected">
