@@ -20,6 +20,22 @@
         <br>
         <li>
           <div class="font-weight-bold">
+            How do I sell my NFT?
+          </div>
+          <div>
+            You have to create a Serum market with the NFT mint. More details <a
+              class="text-decoration-none"
+              href="https://serum-academy.com/en/add-market/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >here</a>.<br>
+            Be aware that creating a Serum market can cost up to 15 SOL.<br>
+            We plan to add an option to create a Serum market directly from NFTCreator.
+          </div>
+        </li>
+        <br>
+        <li>
+          <div class="font-weight-bold">
             Can I mint new tokens after creating my NFT?
           </div>
           <div>
