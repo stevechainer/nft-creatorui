@@ -2,6 +2,7 @@
   "name": "nft-creator-ui",
   "version": "0.1.0",
   "domain": "nft-creator.sonar.watch",
+  "repo": "git@github.com:sonar-watch/nft-creator-ui.git",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

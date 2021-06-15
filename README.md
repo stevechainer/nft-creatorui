@@ -7,6 +7,7 @@ An easy and quick way to create NFTs on Solana blockchain
 ### Setting your own domain name
 
 The `package.json` file contains a field called `homepage`, change it to your name domain.
+The `package.json` file contains a field called `repo`, change it to your repo address.
 
 ### Deploy to GH Pages
 Check that you have put your domain name (see section above) then run:

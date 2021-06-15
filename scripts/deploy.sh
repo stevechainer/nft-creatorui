@@ -20,6 +20,6 @@ git commit -m 'deploy'
 # git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git main
 
 # if you are deploying to https://<USERNAME>.github.io/<REPO>
-git push -f git@github.com:sonar-watch/nft-creator-ui.git main:gh-pages
+git push -f $(awk -F'"' '/"repo": ".+"/{ print $4; exit; }' ../package.json) main:gh-pages
 
 cd -
