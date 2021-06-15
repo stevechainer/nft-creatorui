@@ -3,6 +3,11 @@
 # abort on errors
 set -e
 
+# clean dist folder
+rm -rf dist
+
+git worktree add dist gh-pages
+
 # build
 yarn build
 
