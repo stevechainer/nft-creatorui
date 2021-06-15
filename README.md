@@ -6,7 +6,7 @@ An easy and quick way to create NFTs on Solana blockchain
 
 ### Setting your own domain name
 
-The `package.json` file contains a field called `homepage`, change it to your name domain.
+The `package.json` file contains a field called `homepage`, change it to your name domain.<br>
 The `package.json` file contains a field called `repoURL`, change it to your repo address.
 
 ### Deploy to GH Pages
@@ -21,7 +21,13 @@ NFTCreator uses [VueJS](https://vuejs.org/) and [Vuetify library](https://vuetif
 
 ### Collect referral fees
 
-TO BE IMPLEMENTED
+To be implemented
+
+## Todo
+
+* Create market option
+* Add referral fees
+* Increase 2mb limitation
 
 ## Commands
 
