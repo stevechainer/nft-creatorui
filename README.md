@@ -1,4 +1,4 @@
-# sonar-nft-creator-frontend
+# nft-creator-ui
 
 ## Project setup
 ```

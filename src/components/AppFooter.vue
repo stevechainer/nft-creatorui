@@ -20,7 +20,7 @@
       />
       <v-btn
         icon
-        href="https://github.com/sonar-watch/nft-creator-frontend"
+        href="https://github.com/sonar-watch/nft-creator-ui"
         target="_blank"
         rel="noopener noreferrer"
       >
