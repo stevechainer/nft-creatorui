@@ -8,7 +8,7 @@
     "dev": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "deploy": "./scripts/deploy.sh"
+    "deploy": "./scripts/deploy.sh && gh-pages -d dist"
   },
   "dependencies": {
     "@project-serum/sol-wallet-adapter": "^0.2.0",
@@ -32,6 +32,7 @@
     "eslint": "^6.7.2",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-vue": "^6.2.2",
+    "gh-pages": "^3.2.1",
     "sass": "~1.32.0",
     "sass-loader": "^10.0.0",
     "vue-cli-plugin-vuetify": "~2.4.1",

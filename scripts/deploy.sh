@@ -12,14 +12,4 @@ cd dist
 # if you are deploying to a custom domain
 awk -F'"' '/"domain": ".+"/{ print $4; exit; }' ../package.json > CNAME
 
-git init
-git add -A
-git commit -m 'deploy'
-
-# if you are deploying to https://<USERNAME>.github.io
-# git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git main
-
-# if you are deploying to https://<USERNAME>.github.io/<REPO>
-git push -f main:gh-pages
-
 cd -
