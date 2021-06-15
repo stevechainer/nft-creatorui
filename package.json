@@ -8,7 +8,7 @@
     "dev": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "deploy": "./scripts/deploy.sh && gh-pages -d dist"
+    "deploy": "./scripts/deploy.sh"
   },
   "dependencies": {
     "@project-serum/sol-wallet-adapter": "^0.2.0",
