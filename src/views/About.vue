@@ -1,12 +1,39 @@
 <template>
-  <div>
-    <h1 class="text-h4">
-      How it works?
-    </h1>
-    <p>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit.<br>
-      Neque, suscipit beatae totam iure excepturi ullam vero impedit dolore <br>
-      voluptate adipisci mollitia nobis natus laborum sequi reiciendis, sint, fugit repellendus vitae.
+  <v-container
+    fluid
+    style="max-width:550px;"
+    class="mb-12"
+  >
+    <v-img
+      src="/logos/nft_creator/nft_creator_white.svg"
+      height="55"
+      contain
+      class="mb-3"
+    />
+    <p class="text-center">
+      An easy and quick way to create NFTs on Solana blockchain.<br>
     </p>
-  </div>
+    <v-divider
+      class="my-6"
+    />
+    <about-q-a />
+    <v-divider
+      class="my-6"
+    />
+    <v-btn
+      to="/"
+      block
+    >
+      Back to home
+    </v-btn>
+  </v-container>
 </template>
+
+<script>
+import AboutQA from '../components/AboutQA.vue';
+
+export default {
+  name: 'About',
+  components: { AboutQA },
+};
+</script>

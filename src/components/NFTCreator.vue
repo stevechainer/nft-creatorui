@@ -1,7 +1,7 @@
 <template>
   <v-container
     fluid
-    style="max-width:500px;"
+    style="max-width:550px;"
     class="mb-12"
   >
     <v-img
