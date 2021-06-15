@@ -45,6 +45,21 @@
         <br>
         <li>
           <div class="font-weight-bold">
+            I would like to upload a file of more than 2mb.
+          </div>
+          <div>
+            For the moment this is not possible, you can compress your file using online tools like
+            <a
+              class="text-decoration-none"
+              href="https://squoosh.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >Squoosh</a>
+          </div>
+        </li>
+        <br>
+        <li>
+          <div class="font-weight-bold">
             Can I change the name or image of my NFT?
           </div>
           <div>
