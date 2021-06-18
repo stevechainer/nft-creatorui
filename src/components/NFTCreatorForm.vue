@@ -64,7 +64,7 @@
       ref="file"
       v-model="file"
       style="position:absolute; visibility:hidden;"
-      accept=".png,.gif,.jpg"
+      accept=".png,.gif,.jpg,.jpeg"
       prepend-icon=""
       prepend-inner-icon=""
       required
