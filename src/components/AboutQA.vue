@@ -46,6 +46,18 @@
         <br>
         <li>
           <div class="font-weight-bold">
+            Why are there network fees?
+          </div>
+          <div>
+            To create an NFT you must first create a token and then create an account that could receive this token.
+            You have to deposit a minimum amount of SOL on these two accounts,
+            which is where the biggest part of the network fees come from when creating an NFT.
+            The fees related to the transaction itself are negligible.
+          </div>
+        </li>
+        <br>
+        <li>
+          <div class="font-weight-bold">
             Where the images of the NFTs are stored
           </div>
           <div>
