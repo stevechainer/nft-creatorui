@@ -84,6 +84,7 @@ export default async function createTokenCollectible(connection, wallet, supply)
     const signature = await connection.sendRawTransaction(signed.serialize());
 
     // Awaiting confirmation
+    await new Promise((r) => setTimeout(r, 20000)); // Add sleep to avoid confirmTransaction timeout
     await connection.confirmTransaction(signature, 'confirmed');
 
     return {
