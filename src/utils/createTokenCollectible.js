@@ -85,7 +85,7 @@ export default async function createTokenCollectible(connection, wallet, supply)
 
     // Awaiting confirmation
     await new Promise((r) => setTimeout(r, 20000)); // Add sleep to avoid confirmTransaction timeout
-    await connection.confirmTransaction(signature, 'confirmed');
+    await connection.confirmTransaction(signature);
 
     return {
       address: mintAccount.publicKey,
