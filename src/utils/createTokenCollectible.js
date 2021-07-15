@@ -81,11 +81,12 @@ export default async function createTokenCollectible(connection, wallet, supply)
     const signed = await wallet.signTransaction(transaction);
 
     // Got signature, submitting transaction
+    // eslint-disable-next-line no-unused-vars
     const signature = await connection.sendRawTransaction(signed.serialize());
 
     // Awaiting confirmation
-    await new Promise((r) => setTimeout(r, 20000)); // Add sleep to avoid confirmTransaction timeout
-    await connection.confirmTransaction(signature, 'processed');
+    await new Promise((r) => setTimeout(r, 25000)); // Add sleep to avoid confirmTransaction timeout
+    // await connection.confirmTransaction(signature, 'processed');
 
     return {
       address: mintAccount.publicKey,
