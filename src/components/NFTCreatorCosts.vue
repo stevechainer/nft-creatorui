@@ -4,7 +4,7 @@
       <div>
         Network Fees:&nbsp;
       </div>
-      <div>
+      <div class="font-family-mono">
         {{ networkFeesValue | currency }}
       </div>
     </div>
@@ -12,7 +12,7 @@
       <div>
         Storage Fees:&nbsp;
       </div>
-      <div>
+      <div class="font-family-mono">
         {{ storageFeesValue | currency }}
       </div>
     </div>
@@ -21,7 +21,7 @@
       <div>
         Total Fees:&nbsp;
       </div>
-      <div>
+      <div class="font-family-mono">
         {{ totalFeesValue | currency }}
       </div>
     </div>
@@ -30,13 +30,19 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { computeStorageFees } from '../utils/index';
 
 const TRANSACTION_FEES = 10000;
 
 export default {
   name: 'NFTCreatorCosts',
+  props: {
+    fileSize: {
+      type: Number,
+      required: true,
+    },
+  },
   data: () => ({
-    storageFees: 0,
   }),
   computed: {
     ...mapGetters('costs', ['isExpiry']),
@@ -52,13 +58,35 @@ export default {
     accountFee() {
       return this.$store.state.costs.accountFee;
     },
+    metadataFee() {
+      return this.$store.state.costs.metadataFee;
+    },
+    arweaveTxnFee() {
+      return this.$store.state.costs.arweaveTxnFee;
+    },
+    oneByteCost() {
+      return this.$store.state.costs.oneByteCost;
+    },
     networkFees() {
-      if (!this.mintFee || !this.accountFee) return NaN;
-      return (this.mintFee + this.accountFee + TRANSACTION_FEES) * 1e-9;
+      if (!this.mintFee || !this.accountFee || !this.metadataFee) return NaN;
+      return (this.mintFee + this.accountFee + this.metadataFee + TRANSACTION_FEES * 2) * 1e-9;
     },
     networkFeesValue() {
       if (!this.solanaPrice || !this.networkFees) return NaN;
       return this.networkFees * this.solanaPrice;
+    },
+    storageFees() {
+      const {
+        solanaPrice, arweavePrice, arweaveTxnFee, oneByteCost,
+      } = this;
+      if (!this.solanaPrice || !this.arweavePrice || !this.arweaveTxnFee || !this.oneByteCost) return NaN;
+      const costs = {
+        solana: solanaPrice,
+        arweave: arweavePrice,
+        arweaveTxnFee,
+        oneByteCost,
+      };
+      return computeStorageFees(this.fileSize, costs);
     },
     storageFeesValue() {
       return this.storageFees * this.solanaPrice;

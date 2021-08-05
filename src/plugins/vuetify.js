@@ -5,4 +5,6 @@ Vue.use(Vuetify);
 
 export default new Vuetify({
   theme: { dark: true },
+  customVariables: ['~/assets/variables.scss'],
+  treeShake: true,
 });

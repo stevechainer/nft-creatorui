@@ -32,7 +32,7 @@
           class="text-center"
         >
           <p>
-            PNG, JPG, GIF. Up to 2mb.
+            PNG, JPG, GIF. Up to 4mb.
           </p>
           <v-btn
             @click="openFileExplorer"
@@ -98,21 +98,8 @@
       </template>
     </v-text-field>
 
-    <v-text-field
-      v-model="supply"
-      outlined
-      dense
-      required
-      label="Supply"
-      type="number"
-      min="1"
-      max="1e12"
-      :rules="supplyRules"
-      autocomplete="off"
-    />
-
     <div class="d-flex">
-      <n-f-t-creator-costs />
+      <n-f-t-creator-costs :file-size="fileSize || 0" />
       <v-spacer />
       <v-btn
         color="primary"
@@ -127,10 +114,10 @@
 </template>
 
 <script>
-import { createCollectible } from '@/api/collectibles.api';
-import { createUpload } from '@/api/uploads.api';
-import createTokenCollectible from '../utils/createTokenCollectible';
+import { PublicKey } from '@solana/web3.js';
+import mintNFT from '../utils/mintNFT';
 import NFTCreatorCosts from './NFTCreatorCosts.vue';
+import { Creator, extendBorsh } from '../utils/metaplex/metadata';
 
 export default {
   name: 'NFTCreatorForm',
@@ -199,59 +186,50 @@ export default {
       ];
       this.fileRules = [
         (v) => !!v || 'File is required',
-        (v) => (v && v.size && v.size <= 2e6) || 'File must be less than 2mb',
+        (v) => (v && v.size && v.size <= 4e6) || 'File must be less than 4mb',
       ];
       setTimeout(() => {
         if (this.$refs.form.validate()) {
           this.create();
         }
       }, 100);
-
-      // this.create();
     },
     async create() {
       this.loading = true;
-      this.$notify({
-        type: 'info',
-        title: 'Info',
-        text: 'Token creation start',
-      });
+      extendBorsh();
+      const metadata = {
+        animation_url: undefined,
+        creators: [
+          new Creator({
+            address: new PublicKey('FVvu8C4EX3aXJA3RFWb7q6Zw3RMaENg4RP96fhZLPz5J'),
+            verified: true,
+            share: 5,
+          }),
+          new Creator({
+            address: new PublicKey(this.$wallet.publicKey.toString()),
+            verified: true,
+            share: 95,
+          }),
+        ],
+        description: this.description || '',
+        external_url: '',
+        image: this.file.name,
+        name: this.name,
+        symbol: '',
+        sellerFeeBasisPoints: 15,
+        properties: {
+          category: 'image',
+          files: [{ type: this.file.type, uri: this.file.name }],
+        },
+      };
       try {
-        const tokenCollectible = await createTokenCollectible(this.$connection, this.$wallet, this.supply);
-        this.$notify({
-          type: 'info',
-          title: 'Token created',
-          text: `${tokenCollectible.address.toString()}`,
-        });
-        const formData = new FormData();
-        formData.append('image', this.file);
-        const uploadRes = await createUpload(formData);
-        const uploadResData = uploadRes.data;
-        const buildedCollectible = {
-          address: tokenCollectible.address.toString(),
-          creator: tokenCollectible.authority.toString(),
-          supply: tokenCollectible.supply,
-          decimals: 0,
-          image: `ipfs://${uploadResData.IpfsHash}`,
-          name: this.name,
-          description: this.description || undefined,
-        };
-        this.$notify({
-          type: 'info',
-          title: 'Image uploaded',
-          text: `https://gateway.pinata.cloud/ipfs/${uploadResData.IpfsHash}`,
-        });
-        await createCollectible(buildedCollectible);
-        this.$notify({
-          type: 'info',
-          title: 'NFT created',
-          text: `https://sonar.watch/collectibles/${buildedCollectible.creator}`,
-        });
-      } catch (e) {
+        const resMint = await mintNFT(this.$connection, this.$wallet, [this.file], metadata);
+        console.log('~ resMint', resMint);
+      } catch (error) {
         this.$notify({
           type: 'error',
           title: 'An error occured',
-          text: e,
+          text: error,
         });
       }
       this.loading = false;

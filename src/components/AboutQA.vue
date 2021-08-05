@@ -73,7 +73,7 @@
         <br>
         <li>
           <div class="font-weight-bold">
-            I would like to upload a file of more than 2mb.
+            I would like to upload a file of more than 4mb.
           </div>
           <div>
             For the moment this is not possible, you can compress your file using online tools like
