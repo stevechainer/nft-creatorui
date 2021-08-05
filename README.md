@@ -14,9 +14,12 @@ To be implemented
 
 ### Deploy to Netlify
 
+1. Fork this repository
+
 1. On Netlify, setup up a new project from GitHub with the following settings:
 
-    - **Build Command:** `npm run build` or `yarn build`
+    - **Base directory:** *leave empty*
+    - **Build Command:** `yarn build`
     - **Publish directory:** `dist`
 
 2. Hit the deploy button!
