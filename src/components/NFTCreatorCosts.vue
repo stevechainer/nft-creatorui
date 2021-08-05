@@ -32,7 +32,7 @@
 import { mapActions, mapGetters } from 'vuex';
 import { computeStorageFees } from '../utils/index';
 
-const TRANSACTION_FEES = 10000;
+const SIGNATURE_FEES = 5000;
 
 export default {
   name: 'NFTCreatorCosts',
@@ -69,7 +69,7 @@ export default {
     },
     networkFees() {
       if (!this.mintFee || !this.accountFee || !this.metadataFee) return NaN;
-      return (this.mintFee + this.accountFee + this.metadataFee + TRANSACTION_FEES * 2) * 1e-9;
+      return (this.mintFee + this.accountFee + this.metadataFee + SIGNATURE_FEES * 3) * 1e-9;
     },
     networkFeesValue() {
       if (!this.solanaPrice || !this.networkFees) return NaN;
