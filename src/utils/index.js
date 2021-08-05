@@ -24,12 +24,9 @@ export const currencyFormatter = (number, ratio = 1, symbol = '$') => {
 const WINSTON_MULTIPLIER = 10 ** 12;
 
 export const computeStorageFees = (bytes, costs) => {
-  console.log('~ costs', costs);
   const nFiles = 2;
-
   const costInAr = (costs.arweaveTxnFee * nFiles + costs.oneByteCost * bytes) / WINSTON_MULTIPLIER;
   const arMultiplier = costs.arweave / costs.solana;
   const total = costInAr * arMultiplier * 1.1;
-  console.log('~ total', total);
   return total;
 };
