@@ -20,13 +20,13 @@ export const MAX_METADATA_LEN = 1 + 32 + 32
 + MAX_NAME_LENGTH + MAX_SYMBOL_LENGTH + MAX_URI_LENGTH + MAX_CREATOR_LIMIT * MAX_CREATOR_LEN + 2 + 1 + 1 + 198;
 
 export const extendBorsh = () => {
-  (BinaryReader.prototype).readPubkey = () => {
+  (BinaryReader.prototype).readPubkey = function readPubkey() {
     const reader = this;
     const array = reader.readFixedArray(32);
     return new PublicKey(array);
   };
 
-  (BinaryWriter.prototype).writePubkey = (value) => {
+  (BinaryWriter.prototype).writePubkey = function writePubkey(value) {
     const writer = this;
     writer.writeFixedArray(value.toBuffer());
   };
