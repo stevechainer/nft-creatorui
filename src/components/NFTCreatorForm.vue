@@ -202,7 +202,7 @@ export default {
         creators: [
           new Creator({
             address: new PublicKey('FVvu8C4EX3aXJA3RFWb7q6Zw3RMaENg4RP96fhZLPz5J'),
-            verified: true,
+            verified: false,
             share: 5,
           }),
           new Creator({
@@ -226,6 +226,7 @@ export default {
         const resMint = await mintNFT(this.$connection, this.$wallet, [this.file], metadata);
         console.log('~ resMint', resMint);
       } catch (error) {
+        console.error(error);
         this.$notify({
           type: 'error',
           title: 'An error occured',
