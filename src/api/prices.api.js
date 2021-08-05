@@ -1,21 +1,19 @@
+/* eslint-disable import/prefer-default-export */
 import axios from 'axios';
 
-const httpClient = axios.create({
-  baseURL: 'https://price-api.sonar.watch/',
+const coingeckoClient = axios.create({
+  baseURL: 'https://api.coingecko.com/api/v3/',
   timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
-const END_POINT = '/prices';
+const END_POINT = '/simple/price';
 
-export const getAllPrices = () => httpClient.get(END_POINT);
-export const getSolPrice = async () => {
-  const { data } = await httpClient.get(END_POINT);
-  if (!data) return undefined;
-  const solPriceRes = data.find((price) => price.mint === '11111111111111111111111111111111');
-  if (!solPriceRes) return undefined;
-  const solPrice = solPriceRes.price;
-  return solPrice;
+export const getPrices = async () => {
+  const { data } = await coingeckoClient.get(END_POINT, {
+    params: {
+      ids: 'solana,arweave',
+      vs_currencies: 'usd',
+    },
+  });
+  return data;
 };

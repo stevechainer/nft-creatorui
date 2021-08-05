@@ -29,26 +29,39 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-import { Token } from '@solana/spl-token';
+import { mapActions, mapGetters } from 'vuex';
 
 const TRANSACTION_FEES = 10000;
 
 export default {
   name: 'NFTCreatorCosts',
   data: () => ({
-    networkFees: undefined,
     storageFees: 0,
   }),
   computed: {
-    solPrice() {
-      return this.$store.state.prices.sol;
+    ...mapGetters('costs', ['isExpiry']),
+    solanaPrice() {
+      return this.$store.state.costs.solana;
+    },
+    arweavePrice() {
+      return this.$store.state.costs.arweave;
+    },
+    mintFee() {
+      return this.$store.state.costs.mintFee;
+    },
+    accountFee() {
+      return this.$store.state.costs.accountFee;
+    },
+    networkFees() {
+      if (!this.mintFee || !this.accountFee) return NaN;
+      return (this.mintFee + this.accountFee + TRANSACTION_FEES) * 1e-9;
     },
     networkFeesValue() {
-      return this.networkFees * this.solPrice;
+      if (!this.solanaPrice || !this.networkFees) return NaN;
+      return this.networkFees * this.solanaPrice;
     },
     storageFeesValue() {
-      return this.storageFees * this.solPrice;
+      return this.storageFees * this.solanaPrice;
     },
     totalFeesValue() {
       if (Number.isNaN(this.networkFeesValue) || Number.isNaN(this.storageFeesValue)) return NaN;
@@ -56,16 +69,12 @@ export default {
     },
   },
   async mounted() {
-    await this.updateNetworkFees();
-    await this.fetchSolPrice();
+    if (this.isExpiry) {
+      await this.fetchAll();
+    }
   },
   methods: {
-    ...mapActions('prices', ['fetchSolPrice']),
-    async updateNetworkFees() {
-      const mintFee = await Token.getMinBalanceRentForExemptMint(this.$connection);
-      const accountFee = await Token.getMinBalanceRentForExemptAccount(this.$connection);
-      this.networkFees = (mintFee + accountFee + TRANSACTION_FEES) * 1e-9;
-    },
+    ...mapActions('costs', ['fetchAll']),
   },
 };
 </script>

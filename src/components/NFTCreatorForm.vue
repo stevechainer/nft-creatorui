@@ -123,28 +123,6 @@
         Create
       </v-btn>
     </div>
-
-    <div>
-      <v-slide-x-transition group>
-        <v-alert
-          v-for="alert in alerts"
-          :key="alert.id"
-          class="my-4 text-body-2"
-          :type="alert.type"
-          dense
-          dismissible
-        >
-          {{ alert.msg }}
-          <a
-            v-if="alert.link"
-            :href="alert.link"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="white--text text-decoration-none"
-          > {{ alert.link | address(20) }}</a>
-        </v-alert>
-      </v-slide-x-transition>
-    </div>
   </v-form>
 </template>
 
@@ -163,7 +141,6 @@ export default {
     description: '',
     supply: '',
     file: null,
-    alerts: [],
     nameRules: [],
     descriptionRules: [],
     supplyRules: [],
@@ -234,12 +211,17 @@ export default {
     },
     async create() {
       this.loading = true;
+      this.$notify({
+        type: 'info',
+        title: 'Info',
+        text: 'Token creation start',
+      });
       try {
         const tokenCollectible = await createTokenCollectible(this.$connection, this.$wallet, this.supply);
-        this.alerts.push({
-          id: Date.now() + Math.random(),
+        this.$notify({
           type: 'info',
-          msg: `Token created: ${tokenCollectible.address.toString()}`,
+          title: 'Token created',
+          text: `${tokenCollectible.address.toString()}`,
         });
         const formData = new FormData();
         formData.append('image', this.file);
@@ -254,26 +236,22 @@ export default {
           name: this.name,
           description: this.description || undefined,
         };
-        console.log('~ buildedCollectible', buildedCollectible);
-        this.alerts.push({
-          id: Date.now() + Math.random(),
+        this.$notify({
           type: 'info',
-          msg: 'Image uploaded',
-          link: `https://gateway.pinata.cloud/ipfs/${uploadResData.IpfsHash}`,
+          title: 'Image uploaded',
+          text: `https://gateway.pinata.cloud/ipfs/${uploadResData.IpfsHash}`,
         });
         await createCollectible(buildedCollectible);
-        this.alerts.push({
-          id: Date.now() + Math.random(),
+        this.$notify({
           type: 'info',
-          msg: 'Collectible created',
-          link: `https://sonar.watch/collectibles/${buildedCollectible.creator}`,
+          title: 'NFT created',
+          text: `https://sonar.watch/collectibles/${buildedCollectible.creator}`,
         });
       } catch (e) {
-        console.log('~ e', e);
-        this.alerts.push({
-          id: Date.now() + Math.random(),
-          msg: e,
+        this.$notify({
           type: 'error',
+          title: 'An error occured',
+          text: e,
         });
       }
       this.loading = false;
