@@ -4,6 +4,8 @@ export const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9
 export const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
 const LOG_10 = Math.log(10);
 
+export const sleep = async (ms) => { await new Promise((r) => setTimeout(r, ms)); };
+
 export const currencyFormatter = (number, ratio = 1, symbol = '$') => {
   if (Number.isNaN(number)) return `\u00A0${symbol} NaN`;
   const fromattedNumber = number * ratio;

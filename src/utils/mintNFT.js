@@ -14,6 +14,12 @@ import { findProgramAddress } from './metaplex/utils';
 const RESERVED_TXN_MANIFEST = 'manifest.json';
 
 export default async function mintNFT(connection, wallet, files, metadata) {
+  // Check the wallet eligibility
+  const walletBalance = await connection.getBalance(new PublicKey(wallet.publicKey.toString()));
+  if (walletBalance < 50000000) {
+    throw new Error('You need at least 0.05 SOL in your wallet');
+  }
+
   const metadataContent = {
     name: metadata.name,
     symbol: metadata.symbol,
@@ -94,10 +100,9 @@ export default async function mintNFT(connection, wallet, files, metadata) {
     wallet.publicKey,
   );
 
-  Vue.toasted.show('Creating token...', {
+  Vue.toasted.show('Waiting for signature...', {
     icon: 'timer-sand',
     iconPack: 'mdi',
-    duration: 30000,
   });
 
   const { txid } = await sendTransactionWithRetry(
@@ -105,6 +110,15 @@ export default async function mintNFT(connection, wallet, files, metadata) {
     wallet,
     instructions,
     signers,
+    'singleGossip',
+    false,
+    undefined,
+    () => {
+      Vue.toasted.show('Creating token...', {
+        icon: 'timer-sand',
+        iconPack: 'mdi',
+      });
+    },
   );
 
   try {
@@ -134,7 +148,6 @@ export default async function mintNFT(connection, wallet, files, metadata) {
   Vue.toasted.show('Uploading file...', {
     icon: 'timer-sand',
     iconPack: 'mdi',
-    duration: 30000,
   });
 
   const result = await (
@@ -195,10 +208,9 @@ export default async function mintNFT(connection, wallet, files, metadata) {
       updateInstructions,
     );
 
-    Vue.toasted.show('Updating metadata...', {
+    Vue.toasted.show('Waiting for signature...', {
       icon: 'timer-sand',
       iconPack: 'mdi',
-      duration: 15000,
     });
 
     await sendTransactionWithRetry(
@@ -206,10 +218,20 @@ export default async function mintNFT(connection, wallet, files, metadata) {
       wallet,
       updateInstructions,
       updateSigners,
+      'singleGossip',
+      false,
+      undefined,
+      () => {
+        Vue.toasted.show('Updating metadata...', {
+          icon: 'timer-sand',
+          iconPack: 'mdi',
+        });
+      },
     );
 
     Vue.toasted.show('NFT created!', {
-      duration: 15000,
+      icon: 'party-popper',
+      iconPack: 'mdi',
       action: {
         text: 'View',
         href: `https://sonar.watch/collectibles/${payerPublicKey.toString()}`,

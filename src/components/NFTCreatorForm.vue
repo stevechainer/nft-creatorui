@@ -169,13 +169,13 @@ export default {
         (v) => (v && v.length <= 50) || 'Name must be less than 50 characters',
         (v) => (v && v.length >= 3) || 'Name must be at least 3 characters',
         (v) => (v === '')
-            || (new RegExp("^[A-Za-z0-9'?!.,:áéíóúÁÉÍÓÚñÑäëïÖüÄËÏÖü_ -]+$", 'u').test(v))
+            || (new RegExp("^[A-Za-z0-9'?!.,:#áéíóúÁÉÍÓÚñÑäëïÖüÄËÏÖü_ -]+$", 'u').test(v))
             || 'Use standard characters',
       ];
       this.descriptionRules = [
         (v) => (v.length <= 300) || 'Description must be less than 300 characters',
         (v) => (v === '')
-            || (new RegExp("^[A-Za-z0-9'?!.,:áéíóúÁÉÍÓÚñÑäëïÖüÄËÏÖü_ -]+$", 'u').test(v))
+            || (new RegExp("^[A-Za-z0-9'?!.,:#áéíóúÁÉÍÓÚñÑäëïÖüÄËÏÖü_ -]+$", 'u').test(v))
             || 'Use standard characters',
       ];
       this.supplyRules = [
@@ -227,11 +227,8 @@ export default {
       } catch (error) {
         console.error(error);
         this.$toasted.show(error, {
-          action: {
-            text: 'View',
-            href: 'https://sonar.watch/collectibles/4xpJLYiV5GaJQbiHBDGRmNkTtEoyP8cZh8eJV3gwBW4i',
-            target: '_blank',
-          },
+          icon: 'alert-circle-outline',
+          iconPack: 'mdi',
         });
       }
       this.loading = false;

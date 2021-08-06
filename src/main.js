@@ -13,7 +13,7 @@ filters();
 
 Vue.use(Toasted, {
   position: 'bottom-left',
-  duration: 6000,
+  duration: 45000,
 });
 
 new Vue({

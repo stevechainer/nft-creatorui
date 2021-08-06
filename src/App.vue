@@ -4,10 +4,6 @@
       <v-container fluid>
         <router-view />
         <app-wallet-dialog />
-        <notifications
-          position="bottom left"
-          class="ma-4"
-        />
       </v-container>
     </v-main>
     <app-footer />
