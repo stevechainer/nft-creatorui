@@ -104,7 +104,7 @@
       <v-btn
         color="primary"
         type="submit"
-        :disabled="!valid || !connected || loading"
+        :disabled="!valid || !connected || loading || nftCreated"
         :loading="loading"
       >
         Create
@@ -123,6 +123,7 @@ export default {
   name: 'NFTCreatorForm',
   components: { NFTCreatorCosts },
   data: () => ({
+    nftCreated: false,
     valid: true,
     name: '',
     description: '',
@@ -232,6 +233,7 @@ export default {
         });
       }
       this.loading = false;
+      this.nftCreated = true;
     },
     openFileExplorer() {
       this.$refs.file.$refs.input.click();

@@ -69,7 +69,7 @@ export default {
     },
     networkFees() {
       if (!this.mintFee || !this.accountFee || !this.metadataFee) return NaN;
-      return (this.mintFee + this.accountFee + this.metadataFee + SIGNATURE_FEES * 3) * 1e-9;
+      return (this.mintFee + this.accountFee + this.metadataFee * 1.5 + SIGNATURE_FEES * 3) * 1e-9;
     },
     networkFeesValue() {
       if (!this.solanaPrice || !this.networkFees) return NaN;
