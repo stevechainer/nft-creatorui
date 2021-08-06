@@ -6,7 +6,8 @@ An easy and quick way to create NFTs on Solana blockchain
 
 ### Customizing
 
-NFTCreator uses [VueJS](https://vuejs.org/) and [Vuetify library](https://vuetifyjs.com/). 
+NFTCreator is based on [Metaplex NTFs](https://www.metaplex.com/)<br>
+This UI uses [VueJS](https://vuejs.org/) and [Vuetify library](https://vuetifyjs.com/). 
 
 ### Collect referral fees
 
