@@ -10,6 +10,7 @@ import {
   createMasterEdition, createMetadata, Data, updateMetadata,
 } from './metaplex/metadata';
 import { findProgramAddress } from './metaplex/utils';
+import { sleep } from '.';
 
 const RESERVED_TXN_MANIFEST = 'manifest.json';
 
@@ -228,6 +229,8 @@ export default async function mintNFT(connection, wallet, files, metadata) {
         });
       },
     );
+
+    await sleep(2000);
 
     Vue.toasted.show('NFT created!', {
       icon: 'party-popper',
