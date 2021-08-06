@@ -32,7 +32,7 @@
           class="text-center"
         >
           <p>
-            PNG, JPG, GIF. Up to 2mb.
+            PNG, JPG, GIF. Up to 4mb.
           </p>
           <v-btn
             @click="openFileExplorer"
@@ -98,72 +98,37 @@
       </template>
     </v-text-field>
 
-    <v-text-field
-      v-model="supply"
-      outlined
-      dense
-      required
-      label="Supply"
-      type="number"
-      min="1"
-      max="1e12"
-      :rules="supplyRules"
-      autocomplete="off"
-    />
-
     <div class="d-flex">
-      <n-f-t-creator-costs />
+      <n-f-t-creator-costs :file-size="fileSize || 0" />
       <v-spacer />
       <v-btn
         color="primary"
         type="submit"
-        :disabled="!valid || !connected || loading"
+        :disabled="!valid || !connected || loading || nftCreated"
         :loading="loading"
       >
         Create
       </v-btn>
     </div>
-
-    <div>
-      <v-slide-x-transition group>
-        <v-alert
-          v-for="alert in alerts"
-          :key="alert.id"
-          class="my-4 text-body-2"
-          :type="alert.type"
-          dense
-          dismissible
-        >
-          {{ alert.msg }}
-          <a
-            v-if="alert.link"
-            :href="alert.link"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="white--text text-decoration-none"
-          > {{ alert.link | address(20) }}</a>
-        </v-alert>
-      </v-slide-x-transition>
-    </div>
   </v-form>
 </template>
 
 <script>
-import { createCollectible } from '@/api/collectibles.api';
-import { createUpload } from '@/api/uploads.api';
-import createTokenCollectible from '../utils/createTokenCollectible';
+import { PublicKey } from '@solana/web3.js';
+import mintNFT from '../utils/mintNFT';
 import NFTCreatorCosts from './NFTCreatorCosts.vue';
+import { Creator, extendBorsh } from '../utils/metaplex/metadata';
 
 export default {
   name: 'NFTCreatorForm',
   components: { NFTCreatorCosts },
   data: () => ({
+    nftCreated: false,
     valid: true,
     name: '',
     description: '',
     supply: '',
     file: null,
-    alerts: [],
     nameRules: [],
     descriptionRules: [],
     supplyRules: [],
@@ -205,13 +170,13 @@ export default {
         (v) => (v && v.length <= 50) || 'Name must be less than 50 characters',
         (v) => (v && v.length >= 3) || 'Name must be at least 3 characters',
         (v) => (v === '')
-            || (new RegExp("^[A-Za-z0-9'?!.,:áéíóúÁÉÍÓÚñÑäëïÖüÄËÏÖü_ -]+$", 'u').test(v))
+            || (new RegExp("^[A-Za-z0-9'?!.,:#áéíóúÁÉÍÓÚñÑäëïÖüÄËÏÖü_ -]+$", 'u').test(v))
             || 'Use standard characters',
       ];
       this.descriptionRules = [
         (v) => (v.length <= 300) || 'Description must be less than 300 characters',
         (v) => (v === '')
-            || (new RegExp("^[A-Za-z0-9'?!.,:áéíóúÁÉÍÓÚñÑäëïÖüÄËÏÖü_ -]+$", 'u').test(v))
+            || (new RegExp("^[A-Za-z0-9'?!.,:#áéíóúÁÉÍÓÚñÑäëïÖüÄËÏÖü_ -]+$", 'u').test(v))
             || 'Use standard characters',
       ];
       this.supplyRules = [
@@ -222,61 +187,53 @@ export default {
       ];
       this.fileRules = [
         (v) => !!v || 'File is required',
-        (v) => (v && v.size && v.size <= 2e6) || 'File must be less than 2mb',
+        (v) => (v && v.size && v.size <= 4e6) || 'File must be less than 4mb',
       ];
       setTimeout(() => {
         if (this.$refs.form.validate()) {
           this.create();
         }
       }, 100);
-
-      // this.create();
     },
     async create() {
       this.loading = true;
+      extendBorsh();
+      const metadata = {
+        animation_url: undefined,
+        creators: [
+          new Creator({
+            address: new PublicKey('FVvu8C4EX3aXJA3RFWb7q6Zw3RMaENg4RP96fhZLPz5J'),
+            verified: false,
+            share: 5,
+          }),
+          new Creator({
+            address: new PublicKey(this.$wallet.publicKey.toString()),
+            verified: true,
+            share: 95,
+          }),
+        ],
+        description: this.description || '',
+        external_url: '',
+        image: this.file.name,
+        name: this.name,
+        symbol: '',
+        sellerFeeBasisPoints: 15,
+        properties: {
+          category: 'image',
+          files: [{ type: this.file.type, uri: this.file.name }],
+        },
+      };
       try {
-        const tokenCollectible = await createTokenCollectible(this.$connection, this.$wallet, this.supply);
-        this.alerts.push({
-          id: Date.now() + Math.random(),
-          type: 'info',
-          msg: `Token created: ${tokenCollectible.address.toString()}`,
-        });
-        const formData = new FormData();
-        formData.append('image', this.file);
-        const uploadRes = await createUpload(formData);
-        const uploadResData = uploadRes.data;
-        const buildedCollectible = {
-          address: tokenCollectible.address.toString(),
-          creator: tokenCollectible.authority.toString(),
-          supply: tokenCollectible.supply,
-          decimals: 0,
-          image: `ipfs://${uploadResData.IpfsHash}`,
-          name: this.name,
-          description: this.description || undefined,
-        };
-        console.log('~ buildedCollectible', buildedCollectible);
-        this.alerts.push({
-          id: Date.now() + Math.random(),
-          type: 'info',
-          msg: 'Image uploaded',
-          link: `https://gateway.pinata.cloud/ipfs/${uploadResData.IpfsHash}`,
-        });
-        await createCollectible(buildedCollectible);
-        this.alerts.push({
-          id: Date.now() + Math.random(),
-          type: 'info',
-          msg: 'Collectible created',
-          link: `https://sonar.watch/collectibles/${buildedCollectible.creator}`,
-        });
-      } catch (e) {
-        console.log('~ e', e);
-        this.alerts.push({
-          id: Date.now() + Math.random(),
-          msg: e,
-          type: 'error',
+        await mintNFT(this.$connection, this.$wallet, [this.file], metadata);
+      } catch (error) {
+        console.error(error);
+        this.$toasted.show(error, {
+          icon: 'alert-circle-outline',
+          iconPack: 'mdi',
         });
       }
       this.loading = false;
+      this.nftCreated = true;
     },
     openFileExplorer() {
       this.$refs.file.$refs.input.click();

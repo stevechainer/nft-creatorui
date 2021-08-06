@@ -1,0 +1,23 @@
+@import '~vuetify/src/styles/styles.sass';
+
+.font-family-mono {
+    font-family: 'Roboto Mono', monospace;
+}
+
+.toasted {
+    font-family: $body-font-family !important;
+    font-size: $font-size-root !important;
+    font-weight: 400 !important;
+    justify-content: left !important;
+}
+
+.toasted-container {
+    font-family: $body-font-family !important;
+    font-size: $font-size-root !important;
+    font-weight: 400 !important;
+}
+
+.toasted-container .toasted .action {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}

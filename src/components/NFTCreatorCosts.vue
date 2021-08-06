@@ -4,7 +4,7 @@
       <div>
         Network Fees:&nbsp;
       </div>
-      <div>
+      <div class="font-family-mono">
         {{ networkFeesValue | currency }}
       </div>
     </div>
@@ -12,7 +12,7 @@
       <div>
         Storage Fees:&nbsp;
       </div>
-      <div>
+      <div class="font-family-mono">
         {{ storageFeesValue | currency }}
       </div>
     </div>
@@ -21,7 +21,7 @@
       <div>
         Total Fees:&nbsp;
       </div>
-      <div>
+      <div class="font-family-mono">
         {{ totalFeesValue | currency }}
       </div>
     </div>
@@ -29,26 +29,67 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-import { Token } from '@solana/spl-token';
+import { mapActions, mapGetters } from 'vuex';
+import { computeStorageFees } from '../utils/index';
 
-const TRANSACTION_FEES = 10000;
+const SIGNATURE_FEES = 5000;
 
 export default {
   name: 'NFTCreatorCosts',
+  props: {
+    fileSize: {
+      type: Number,
+      required: true,
+    },
+  },
   data: () => ({
-    networkFees: undefined,
-    storageFees: 0,
   }),
   computed: {
-    solPrice() {
-      return this.$store.state.prices.sol;
+    ...mapGetters('costs', ['isExpiry']),
+    solanaPrice() {
+      return this.$store.state.costs.solana;
+    },
+    arweavePrice() {
+      return this.$store.state.costs.arweave;
+    },
+    mintFee() {
+      return this.$store.state.costs.mintFee;
+    },
+    accountFee() {
+      return this.$store.state.costs.accountFee;
+    },
+    metadataFee() {
+      return this.$store.state.costs.metadataFee;
+    },
+    arweaveTxnFee() {
+      return this.$store.state.costs.arweaveTxnFee;
+    },
+    oneByteCost() {
+      return this.$store.state.costs.oneByteCost;
+    },
+    networkFees() {
+      if (!this.mintFee || !this.accountFee || !this.metadataFee) return NaN;
+      return (this.mintFee + this.accountFee + this.metadataFee * 1.5 + SIGNATURE_FEES * 3) * 1e-9;
     },
     networkFeesValue() {
-      return this.networkFees * this.solPrice;
+      if (!this.solanaPrice || !this.networkFees) return NaN;
+      return this.networkFees * this.solanaPrice;
+    },
+    storageFees() {
+      const {
+        solanaPrice, arweavePrice, arweaveTxnFee, oneByteCost,
+      } = this;
+      if (!this.solanaPrice || !this.arweavePrice || !this.arweaveTxnFee || !this.oneByteCost) return NaN;
+      const costs = {
+        solana: solanaPrice,
+        arweave: arweavePrice,
+        arweaveTxnFee,
+        oneByteCost,
+      };
+      return computeStorageFees(this.fileSize, costs);
     },
     storageFeesValue() {
-      return this.storageFees * this.solPrice;
+      return this.storageFees * this.solanaPrice;
     },
     totalFeesValue() {
       if (Number.isNaN(this.networkFeesValue) || Number.isNaN(this.storageFeesValue)) return NaN;
@@ -56,16 +97,12 @@ export default {
     },
   },
   async mounted() {
-    await this.updateNetworkFees();
-    await this.fetchSolPrice();
+    if (this.isExpiry) {
+      await this.fetchAll();
+    }
   },
   methods: {
-    ...mapActions('prices', ['fetchSolPrice']),
-    async updateNetworkFees() {
-      const mintFee = await Token.getMinBalanceRentForExemptMint(this.$connection);
-      const accountFee = await Token.getMinBalanceRentForExemptAccount(this.$connection);
-      this.networkFees = (mintFee + accountFee + TRANSACTION_FEES) * 1e-9;
-    },
+    ...mapActions('costs', ['fetchAll']),
   },
 };
 </script>
