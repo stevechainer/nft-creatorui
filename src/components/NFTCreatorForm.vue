@@ -223,14 +223,15 @@ export default {
         },
       };
       try {
-        const resMint = await mintNFT(this.$connection, this.$wallet, [this.file], metadata);
-        console.log('~ resMint', resMint);
+        await mintNFT(this.$connection, this.$wallet, [this.file], metadata);
       } catch (error) {
         console.error(error);
-        this.$notify({
-          type: 'error',
-          title: 'An error occured',
-          text: error,
+        this.$toasted.show(error, {
+          action: {
+            text: 'View',
+            href: 'https://sonar.watch/collectibles/4xpJLYiV5GaJQbiHBDGRmNkTtEoyP8cZh8eJV3gwBW4i',
+            target: '_blank',
+          },
         });
       }
       this.loading = false;

@@ -94,6 +94,12 @@ export default async function mintNFT(connection, wallet, files, metadata) {
     wallet.publicKey,
   );
 
+  Vue.toasted.show('Creating token...', {
+    icon: 'timer-sand',
+    iconPack: 'mdi',
+    duration: 30000,
+  });
+
   const { txid } = await sendTransactionWithRetry(
     connection,
     wallet,
@@ -124,6 +130,12 @@ export default async function mintNFT(connection, wallet, files, metadata) {
   data.append('tags', JSON.stringify(tags));
   data.append('transaction', txid);
   realFiles.map((f) => data.append('file[]', f));
+
+  Vue.toasted.show('Uploading file...', {
+    icon: 'timer-sand',
+    iconPack: 'mdi',
+    duration: 30000,
+  });
 
   const result = await (
     await fetch(
@@ -183,6 +195,12 @@ export default async function mintNFT(connection, wallet, files, metadata) {
       updateInstructions,
     );
 
+    Vue.toasted.show('Updating metadata...', {
+      icon: 'timer-sand',
+      iconPack: 'mdi',
+      duration: 15000,
+    });
+
     await sendTransactionWithRetry(
       connection,
       wallet,
@@ -190,14 +208,17 @@ export default async function mintNFT(connection, wallet, files, metadata) {
       updateSigners,
     );
 
-    Vue.notify({
-      type: 'success',
-      title: 'Art created on Solana',
-      text: `${arweaveLink}`,
+    Vue.toasted.show('NFT created!', {
+      duration: 15000,
+      action: {
+        text: 'View',
+        href: `https://sonar.watch/collectibles/${payerPublicKey.toString()}`,
+        target: '_blank',
+      },
     });
   }
 
-  return { metadataAccount };
+  return { metadataAccount, mintKey };
 }
 
 export const prepPayForFilesTxn = async (wallet, files) => {

@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Notifications from 'vue-notification';
+import Toasted from 'vue-toasted';
 import App from './App.vue';
 import router from './router';
 import store from './store';
@@ -11,7 +11,10 @@ Vue.prototype.$connection = connection;
 Vue.config.productionTip = false;
 filters();
 
-Vue.use(Notifications);
+Vue.use(Toasted, {
+  position: 'bottom-left',
+  duration: 6000,
+});
 
 new Vue({
   router,
