@@ -65,7 +65,7 @@
             I just created my NFT, how can I send it to someone?
           </div>
           <div>
-            Your NFT should be listed on your as a traditional token.
+            Your NFT should be listed in your wallet as a traditional token.
             In some wallets it will be listed directly as an NFT (e.g. Phantom)
           </div>
         </li>
