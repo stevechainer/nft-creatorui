@@ -27,6 +27,9 @@ To be implemented
 
 ## Todo
 
+* Add advanced settings
+    * Let user set is royalties basis points
+    * Let user set custom properties
 * Add referral fees
 
 ## Commands
