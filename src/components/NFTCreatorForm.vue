@@ -202,11 +202,6 @@ export default {
         animation_url: undefined,
         creators: [
           new Creator({
-            address: new PublicKey('FVvu8C4EX3aXJA3RFWb7q6Zw3RMaENg4RP96fhZLPz5J'),
-            verified: false,
-            share: 5,
-          }),
-          new Creator({
             address: new PublicKey(this.$wallet.publicKey.toString()),
             verified: true,
             share: 95,
