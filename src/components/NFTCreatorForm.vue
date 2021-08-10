@@ -204,7 +204,7 @@ export default {
           new Creator({
             address: new PublicKey(this.$wallet.publicKey.toString()),
             verified: true,
-            share: 95,
+            share: 100,
           }),
         ],
         description: this.description || '',
