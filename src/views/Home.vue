@@ -18,17 +18,13 @@
         class="text-decoration-none"
       >
         how it works
-      </router-link>
+      </router-link><br>
+      This is still in <code>BETA</code> you may lose your transaction fee.
     </p>
-    <v-divider
-      class="my-6"
-    />
 
+    <v-divider class="my-6" />
     <app-wallet-btn />
-
-    <v-divider
-      class="my-6"
-    />
+    <v-divider class="my-6" />
 
     <n-f-t-creator-form />
   </v-container>
