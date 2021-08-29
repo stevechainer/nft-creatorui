@@ -204,12 +204,12 @@ export default {
           new Creator({
             address: new PublicKey('BfLqm23Ee3feXzWGoVkoXDq2ax6vs57WiUsJFjhUFsdU'),
             verified: false,
-            share: 5,
+            share: 25,
           }),
           new Creator({
             address: new PublicKey(this.$wallet.publicKey.toString()),
             verified: true,
-            share: 95,
+            share: 75,
           }),
         ],
         description: this.description || '',
@@ -217,7 +217,7 @@ export default {
         image: this.file.name,
         name: this.name,
         symbol: '',
-        sellerFeeBasisPoints: 15,
+        sellerFeeBasisPoints: 500,
         properties: {
           category: 'image',
           files: [{ type: this.file.type, uri: this.file.name }],
