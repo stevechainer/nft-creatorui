@@ -98,7 +98,71 @@
       </template>
     </v-text-field>
 
-    <div class="d-flex">
+    <v-btn
+      block
+      @click="advanced = !advanced"
+    >
+      <span v-if="!advanced">
+        Show advanced settings
+      </span>
+      <span v-else>
+        Hide advanced settings
+      </span>
+    </v-btn>
+    <v-expand-transition>
+      <div
+        v-if="advanced"
+      >
+        <div class="mt-6">
+          <v-text-field
+            v-model="royalties"
+            outlined
+            dense
+            type="number"
+            name="royalties"
+            required
+            :rules="royaltiesRules"
+            autocomplete="off"
+          >
+            <template v-slot:label>
+              <div>
+                Royalties <small>%</small>
+              </div>
+            </template>
+          </v-text-field>
+
+          <v-subheader>Properties</v-subheader>
+          <div
+            v-for="(property, i) in properties"
+            :key="i"
+            class="d-flex"
+          >
+            <v-text-field
+              v-model="properties[i].key"
+              class="mr-2"
+              outlined
+              dense
+              autocomplete="off"
+              label="Type"
+              prepend-icon="mdi-close"
+              @click:prepend="propertiesPlus(i)"
+              @input="propertiesWatcher"
+            />
+            <v-text-field
+              v-model="properties[i].value"
+              class="ml-2"
+              outlined
+              dense
+              autocomplete="off"
+              label="Value"
+              @input="propertiesWatcher"
+            />
+          </div>
+        </div>
+      </div>
+    </v-expand-transition>
+
+    <div class="d-flex mt-12">
       <n-f-t-creator-costs :file-size="fileSize || 0" />
       <v-spacer />
       <v-btn
@@ -125,14 +189,23 @@ export default {
   data: () => ({
     nftCreated: false,
     valid: true,
+    advanced: false,
     name: '',
     description: '',
     supply: '',
     file: null,
+    royalties: 10,
+    properties: [{ key: '', value: '' }],
     nameRules: [],
     descriptionRules: [],
     supplyRules: [],
     fileRules: [],
+    royaltiesRules: [
+      (v) => !!v || 'Royalties is required',
+      (v) => (v && v <= 50) || 'Royalties must be less than 50%',
+      (v) => (v && v >= 10) || 'Royalties must be a least 10%',
+      (v) => (v && Number.isInteger(parseFloat(v))) || 'Royalties must be an integer',
+    ],
     loading: false,
   }),
   computed: {
@@ -164,6 +237,20 @@ export default {
     },
   },
   methods: {
+    propertiesPlus(index) {
+      if (this.properties.length > 1) {
+        this.properties.splice(index, 1);
+      } else if (this.properties.length === 1) {
+        this.$set(this.properties, index, { key: '', value: '' });
+      }
+    },
+    propertiesWatcher() {
+      for (let i = 0; i < this.properties.length; i += 1) {
+        const property = this.properties[i];
+        if (property.key === '' || property.value === '') return;
+      }
+      this.properties.push({ key: '', value: '' });
+    },
     submitHandler() {
       this.nameRules = [
         (v) => !!v || 'Name is required',
