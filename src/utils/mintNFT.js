@@ -201,7 +201,7 @@ export default async function mintNFT(connection, wallet, files, metadata) {
     // // In this instruction, mint authority will be removed from the main mint, while
     // // minting authority will be maintained for the Printing mint (which we want.)
     await createMasterEdition(
-      undefined,
+      0,
       mintKey,
       payerPublicKey,
       payerPublicKey,
