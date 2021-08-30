@@ -7,7 +7,7 @@ import { getAssetCostToStore } from './metaplex/assets';
 import { sendTransactionWithRetry } from './metaplex/connectionHelpers';
 import { AR_SOL_HOLDER_ID, programIds } from './metaplex/ids';
 import {
-  createMasterEdition, createMetadata, Data, updateMetadata,
+  createMetadata, Data, updateMetadata,
 } from './metaplex/metadata';
 import { findProgramAddress } from './metaplex/utils';
 import { sleep } from '.';
