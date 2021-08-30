@@ -218,6 +218,16 @@ export default async function mintNFT(connection, wallet, files, metadata) {
         [],
       ),
     );
+    updateInstructions.push(
+      Token.createSetAuthorityInstruction(
+        TOKEN_PROGRAM_ID,
+        mintKey,
+        null,
+        'FreezeAccount',
+        wallet.publicKey,
+        [],
+      ),
+    );
 
     Vue.toasted.show('Waiting for signature...', {
       icon: 'timer-sand',
