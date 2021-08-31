@@ -28,6 +28,7 @@ export default async function mintNFT(connection, wallet, files, metadata) {
     seller_fee_basis_points: metadata.sellerFeeBasisPoints,
     image: metadata.image,
     animation_url: metadata.animation_url,
+    attributes: metadata.attributes,
     external_url: metadata.external_url,
     properties: {
       ...metadata.properties,
@@ -121,6 +122,11 @@ export default async function mintNFT(connection, wallet, files, metadata) {
       });
     },
   );
+
+  Vue.toasted.show('Waiting for confirmation...', {
+    icon: 'timer-sand',
+    iconPack: 'mdi',
+  });
 
   try {
     await connection.confirmTransaction(txid, 'max');

@@ -131,31 +131,35 @@
             </template>
           </v-text-field>
 
-          <v-subheader>Properties</v-subheader>
+          <v-subheader class="px-0">
+            Attributes
+          </v-subheader>
           <div
-            v-for="(property, i) in properties"
+            v-for="(attribute, i) in attributes"
             :key="i"
             class="d-flex"
           >
             <v-text-field
-              v-model="properties[i].key"
+              v-model="attributes[i].trait_type"
               class="mr-2"
               outlined
               dense
               autocomplete="off"
-              label="Type"
+              placeholder="Color"
               prepend-icon="mdi-close"
-              @click:prepend="propertiesPlus(i)"
-              @input="propertiesWatcher"
+              :rules="traitTypeRules"
+              @click:prepend="attributesPlus(i)"
+              @input="attributesWatcher"
             />
             <v-text-field
-              v-model="properties[i].value"
+              v-model="attributes[i].value"
               class="ml-2"
               outlined
               dense
               autocomplete="off"
-              label="Value"
-              @input="propertiesWatcher"
+              placeholder="red"
+              :rules="traitValueRules"
+              @input="attributesWatcher"
             />
           </div>
         </div>
@@ -195,11 +199,13 @@ export default {
     supply: '',
     file: null,
     royalties: 10,
-    properties: [{ key: '', value: '' }],
+    attributes: [{ trait_type: '', value: '' }],
     nameRules: [],
     descriptionRules: [],
     supplyRules: [],
     fileRules: [],
+    traitTypeRules: [],
+    traitValueRules: [],
     royaltiesRules: [
       (v) => !!v || 'Royalties is required',
       (v) => (v && v <= 50) || 'Royalties must be less than 50%',
@@ -237,19 +243,27 @@ export default {
     },
   },
   methods: {
-    propertiesPlus(index) {
-      if (this.properties.length > 1) {
-        this.properties.splice(index, 1);
-      } else if (this.properties.length === 1) {
-        this.$set(this.properties, index, { key: '', value: '' });
+    getParsedAttributes() {
+      const parsedAttributes = this.attributes.filter((attribute) => {
+        if (!attribute.trait_type || attribute.trait_type === '') return false;
+        if (!attribute.value || attribute.value === '') return false;
+        return true;
+      });
+      return parsedAttributes;
+    },
+    attributesPlus(index) {
+      if (this.attributes.length > 1) {
+        this.attributes.splice(index, 1);
+      } else if (this.attributes.length === 1) {
+        this.$set(this.attributes, index, { trait_type: '', value: '' });
       }
     },
-    propertiesWatcher() {
-      for (let i = 0; i < this.properties.length; i += 1) {
-        const property = this.properties[i];
-        if (property.key === '' || property.value === '') return;
+    attributesWatcher() {
+      for (let i = 0; i < this.attributes.length; i += 1) {
+        const attribute = this.attributes[i];
+        if (attribute.trait_type === '' || attribute.value === '') return;
       }
-      this.properties.push({ key: '', value: '' });
+      this.attributes.push({ trait_type: '', value: '' });
     },
     submitHandler() {
       this.nameRules = [
@@ -259,6 +273,18 @@ export default {
         (v) => (v === '')
             || (new RegExp("^[A-Za-z0-9'?!.,:#áéíóúÁÉÍÓÚñÑäëïÖüÄËÏÖü_ -]+$", 'u').test(v))
             || 'Use standard characters',
+      ];
+      this.traitValueRules = [
+        (v) => (v.length <= 20) || 'Trait value must be less than 20 characters',
+        (v) => (v === '')
+        || (new RegExp('^[A-Za-z0-9_-]+$', 'u').test(v))
+        || 'Use standard characters',
+      ];
+      this.traitTypeRules = [
+        (v) => (v.length <= 20) || 'Trait type must be less than 20 characters',
+        (v) => (v === '')
+        || (new RegExp('^[A-Za-z0-9_-]+$', 'u').test(v))
+        || 'Use standard characters',
       ];
       this.descriptionRules = [
         (v) => (v.length <= 300) || 'Description must be less than 300 characters',
@@ -304,7 +330,8 @@ export default {
         image: this.file.name,
         name: this.name,
         symbol: '',
-        sellerFeeBasisPoints: 500,
+        sellerFeeBasisPoints: this.royalties * 100,
+        attributes: this.getParsedAttributes(),
         properties: {
           category: 'image',
           files: [{ type: this.file.type, uri: this.file.name }],
@@ -312,6 +339,7 @@ export default {
       };
       try {
         await mintNFT(this.$connection, this.$wallet, [this.file], metadata);
+        this.nftCreated = true;
       } catch (error) {
         console.error(error);
         this.$toasted.show(error, {
@@ -320,7 +348,6 @@ export default {
         });
       }
       this.loading = false;
-      this.nftCreated = true;
     },
     openFileExplorer() {
       this.$refs.file.$refs.input.click();
