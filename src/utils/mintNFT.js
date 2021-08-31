@@ -261,11 +261,17 @@ export default async function mintNFT(connection, wallet, files, metadata) {
     Vue.toasted.show('NFT created!', {
       icon: 'party-popper',
       iconPack: 'mdi',
-      action: {
-        text: 'View',
-        href: `https://sonar.watch/collectibles/${payerPublicKey.toString()}`,
-        target: '_blank',
-      },
+      action: [
+        {
+          text: 'View',
+          href: `https://sonar.watch/collectibles/${payerPublicKey.toString()}`,
+          target: '_blank',
+        }, {
+          text: 'Sell',
+          href: 'https://marketplace.sonar.watch',
+          target: '_blank',
+        },
+      ],
     });
   }
 
