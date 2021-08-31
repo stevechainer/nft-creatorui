@@ -98,7 +98,75 @@
       </template>
     </v-text-field>
 
-    <div class="d-flex">
+    <v-btn
+      block
+      @click="advanced = !advanced"
+    >
+      <span v-if="!advanced">
+        Show advanced settings
+      </span>
+      <span v-else>
+        Hide advanced settings
+      </span>
+    </v-btn>
+    <v-expand-transition>
+      <div
+        v-if="advanced"
+      >
+        <div class="mt-6">
+          <v-text-field
+            v-model="royalties"
+            outlined
+            dense
+            type="number"
+            name="royalties"
+            required
+            :rules="royaltiesRules"
+            autocomplete="off"
+          >
+            <template v-slot:label>
+              <div>
+                Royalties <small>%</small>
+              </div>
+            </template>
+          </v-text-field>
+
+          <v-subheader class="px-0">
+            Attributes
+          </v-subheader>
+          <div
+            v-for="(attribute, i) in attributes"
+            :key="i"
+            class="d-flex"
+          >
+            <v-text-field
+              v-model="attributes[i].trait_type"
+              class="mr-2"
+              outlined
+              dense
+              autocomplete="off"
+              placeholder="Color"
+              prepend-icon="mdi-close"
+              :rules="traitTypeRules"
+              @click:prepend="attributesPlus(i)"
+              @input="attributesWatcher"
+            />
+            <v-text-field
+              v-model="attributes[i].value"
+              class="ml-2"
+              outlined
+              dense
+              autocomplete="off"
+              placeholder="red"
+              :rules="traitValueRules"
+              @input="attributesWatcher"
+            />
+          </div>
+        </div>
+      </div>
+    </v-expand-transition>
+
+    <div class="d-flex mt-12">
       <n-f-t-creator-costs :file-size="fileSize || 0" />
       <v-spacer />
       <v-btn
@@ -125,14 +193,25 @@ export default {
   data: () => ({
     nftCreated: false,
     valid: true,
+    advanced: false,
     name: '',
     description: '',
     supply: '',
     file: null,
+    royalties: 10,
+    attributes: [{ trait_type: '', value: '' }],
     nameRules: [],
     descriptionRules: [],
     supplyRules: [],
     fileRules: [],
+    traitTypeRules: [],
+    traitValueRules: [],
+    royaltiesRules: [
+      (v) => !!v || 'Royalties is required',
+      (v) => (v && v <= 50) || 'Royalties must be less than 50%',
+      (v) => (v && v >= 10) || 'Royalties must be a least 10%',
+      (v) => (v && Number.isInteger(parseFloat(v))) || 'Royalties must be an integer',
+    ],
     loading: false,
   }),
   computed: {
@@ -164,6 +243,28 @@ export default {
     },
   },
   methods: {
+    getParsedAttributes() {
+      const parsedAttributes = this.attributes.filter((attribute) => {
+        if (!attribute.trait_type || attribute.trait_type === '') return false;
+        if (!attribute.value || attribute.value === '') return false;
+        return true;
+      });
+      return parsedAttributes;
+    },
+    attributesPlus(index) {
+      if (this.attributes.length > 1) {
+        this.attributes.splice(index, 1);
+      } else if (this.attributes.length === 1) {
+        this.$set(this.attributes, index, { trait_type: '', value: '' });
+      }
+    },
+    attributesWatcher() {
+      for (let i = 0; i < this.attributes.length; i += 1) {
+        const attribute = this.attributes[i];
+        if (attribute.trait_type === '' || attribute.value === '') return;
+      }
+      this.attributes.push({ trait_type: '', value: '' });
+    },
     submitHandler() {
       this.nameRules = [
         (v) => !!v || 'Name is required',
@@ -172,6 +273,18 @@ export default {
         (v) => (v === '')
             || (new RegExp("^[A-Za-z0-9'?!.,:#áéíóúÁÉÍÓÚñÑäëïÖüÄËÏÖü_ -]+$", 'u').test(v))
             || 'Use standard characters',
+      ];
+      this.traitValueRules = [
+        (v) => (v.length <= 20) || 'Trait value must be less than 20 characters',
+        (v) => (v === '')
+        || (new RegExp('^[A-Za-z0-9_-]+$', 'u').test(v))
+        || 'Use standard characters',
+      ];
+      this.traitTypeRules = [
+        (v) => (v.length <= 20) || 'Trait type must be less than 20 characters',
+        (v) => (v === '')
+        || (new RegExp('^[A-Za-z0-9_-]+$', 'u').test(v))
+        || 'Use standard characters',
       ];
       this.descriptionRules = [
         (v) => (v.length <= 300) || 'Description must be less than 300 characters',
@@ -217,7 +330,8 @@ export default {
         image: this.file.name,
         name: this.name,
         symbol: '',
-        sellerFeeBasisPoints: 500,
+        sellerFeeBasisPoints: this.royalties * 100,
+        attributes: this.getParsedAttributes(),
         properties: {
           category: 'image',
           files: [{ type: this.file.type, uri: this.file.name }],
@@ -225,6 +339,7 @@ export default {
       };
       try {
         await mintNFT(this.$connection, this.$wallet, [this.file], metadata);
+        this.nftCreated = true;
       } catch (error) {
         console.error(error);
         this.$toasted.show(error, {
@@ -233,7 +348,6 @@ export default {
         });
       }
       this.loading = false;
-      this.nftCreated = true;
     },
     openFileExplorer() {
       this.$refs.file.$refs.input.click();

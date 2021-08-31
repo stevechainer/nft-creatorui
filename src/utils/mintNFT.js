@@ -28,6 +28,7 @@ export default async function mintNFT(connection, wallet, files, metadata) {
     seller_fee_basis_points: metadata.sellerFeeBasisPoints,
     image: metadata.image,
     animation_url: metadata.animation_url,
+    attributes: metadata.attributes,
     external_url: metadata.external_url,
     properties: {
       ...metadata.properties,
@@ -121,6 +122,11 @@ export default async function mintNFT(connection, wallet, files, metadata) {
       });
     },
   );
+
+  Vue.toasted.show('Waiting for confirmation...', {
+    icon: 'timer-sand',
+    iconPack: 'mdi',
+  });
 
   try {
     await connection.confirmTransaction(txid, 'max');
@@ -255,11 +261,17 @@ export default async function mintNFT(connection, wallet, files, metadata) {
     Vue.toasted.show('NFT created!', {
       icon: 'party-popper',
       iconPack: 'mdi',
-      action: {
-        text: 'View',
-        href: `https://sonar.watch/collectibles/${payerPublicKey.toString()}`,
-        target: '_blank',
-      },
+      action: [
+        {
+          text: 'View',
+          href: `https://sonar.watch/collectibles/${payerPublicKey.toString()}`,
+          target: '_blank',
+        }, {
+          text: 'Sell',
+          href: 'https://marketplace.sonar.watch',
+          target: '_blank',
+        },
+      ],
     });
   }
 
