@@ -266,10 +266,6 @@ export default async function mintNFT(connection, wallet, files, metadata) {
           text: 'View',
           href: `https://sonar.watch/collectibles/${payerPublicKey.toString()}`,
           target: '_blank',
-        }, {
-          text: 'Sell',
-          href: 'https://marketplace.sonar.watch',
-          target: '_blank',
         },
       ],
     });
