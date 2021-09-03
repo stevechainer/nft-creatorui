@@ -198,7 +198,7 @@ export default {
     description: '',
     supply: '',
     file: null,
-    royalties: 5,
+    royalties: 3,
     attributes: [{ trait_type: '', value: '' }],
     nameRules: [],
     descriptionRules: [],
@@ -209,7 +209,7 @@ export default {
     royaltiesRules: [
       (v) => !!v || 'Royalties is required',
       (v) => (v && v <= 50) || 'Royalties must be less than 50%',
-      (v) => (v && v >= 5) || 'Royalties must be a least 5%',
+      (v) => (v && v >= 3) || 'Royalties must be a least 3%',
       (v) => (v && Number.isInteger(parseFloat(v))) || 'Royalties must be an integer',
     ],
     loading: false,
