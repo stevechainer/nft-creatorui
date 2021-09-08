@@ -198,7 +198,7 @@ export default {
     description: '',
     supply: '',
     file: null,
-    royalties: 3,
+    royalties: 1,
     attributes: [{ trait_type: '', value: '' }],
     nameRules: [],
     descriptionRules: [],
@@ -209,7 +209,7 @@ export default {
     royaltiesRules: [
       (v) => !!v || 'Royalties is required',
       (v) => (v && v <= 50) || 'Royalties must be less than 50%',
-      (v) => (v && v >= 3) || 'Royalties must be a least 3%',
+      (v) => (v && v >= 1) || 'Royalties must be a least 1%',
       (v) => (v && Number.isInteger(parseFloat(v))) || 'Royalties must be an integer',
     ],
     loading: false,
@@ -317,12 +317,12 @@ export default {
           new Creator({
             address: new PublicKey('BfLqm23Ee3feXzWGoVkoXDq2ax6vs57WiUsJFjhUFsdU'),
             verified: false,
-            share: 5,
+            share: 1,
           }),
           new Creator({
             address: new PublicKey(this.$wallet.publicKey.toString()),
             verified: true,
-            share: 95,
+            share: 99,
           }),
         ],
         description: this.description || '',

@@ -36,8 +36,8 @@
           </div>
           <div>
             This is how much of each secondary sale will be paid out to the creators.<br>
-            The minimum is <code>3%</code> and the maximum is <code>50%</code><br>
-            About creators split they are <code>5%</code> for NFT Creator and <code>95%</code> for the creator.
+            The minimum is <code>1%</code> and the maximum is <code>50%</code><br>
+            About creators split they are <code>1%</code> for NFT Creator and <code>99%</code> for the creator.
           </div>
         </li>
         <br>
