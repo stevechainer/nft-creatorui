@@ -32,7 +32,7 @@
           class="text-center"
         >
           <p>
-            PNG, JPG, GIF. Up to 6mb.
+            PNG, JPG, GIF. Up to 2mb.
           </p>
           <v-btn
             @click="openFileExplorer"
@@ -300,7 +300,7 @@ export default {
       ];
       this.fileRules = [
         (v) => !!v || 'File is required',
-        (v) => (v && v.size && v.size <= 6e6) || 'File must be less than 6mb',
+        (v) => (v && v.size && v.size <= 2e6) || 'File must be less than 2mb',
       ];
       setTimeout(() => {
         if (this.$refs.form.validate()) {
