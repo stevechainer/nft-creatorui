@@ -38,6 +38,7 @@ export default async function mintNFT(connection, wallet, files, metadata) {
       })),
     },
   };
+  if (metadata.collection) metadataContent.collection = metadata.collection;
 
   const realFiles = [
     ...files,

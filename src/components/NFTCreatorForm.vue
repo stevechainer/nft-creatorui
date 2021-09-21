@@ -115,6 +115,16 @@
       >
         <div class="mt-6">
           <v-text-field
+            v-model="externalUrl"
+            outlined
+            dense
+            name="externalUrl"
+            :rules="externalUrlRules"
+            autocomplete="off"
+            label="External URL"
+            placeholder="https://website.com"
+          />
+          <v-text-field
             v-model="royalties"
             outlined
             dense
@@ -130,6 +140,36 @@
               </div>
             </template>
           </v-text-field>
+
+          <v-subheader class="px-0">
+            Collection
+          </v-subheader>
+          <div class="d-flex">
+            <v-text-field
+              v-model="collectionFamily"
+              class="mr-2"
+              outlined
+              dense
+              name="collectionFamily"
+              :rules="collectionFamilyRules"
+              autocomplete="off"
+              label="Family"
+              placeholder="Ex: Pigs on Solana"
+              persistent-placeholder
+            />
+            <v-text-field
+              v-model="collectionName"
+              class="ml-2"
+              outlined
+              dense
+              name="collectionName"
+              :rules="collectionNameRules"
+              autocomplete="off"
+              label="Name"
+              placeholder="Ex: Pigs on Solana Season #1"
+              persistent-placeholder
+            />
+          </div>
 
           <v-subheader class="px-0">
             Attributes
@@ -197,6 +237,9 @@ export default {
     name: '',
     description: '',
     supply: '',
+    externalUrl: '',
+    collectionName: '',
+    collectionFamily: '',
     file: null,
     royalties: 1,
     attributes: [{ trait_type: '', value: '' }],
@@ -206,6 +249,9 @@ export default {
     fileRules: [],
     traitTypeRules: [],
     traitValueRules: [],
+    externalUrlRules: [],
+    collectionNameRules: [],
+    collectionFamilyRules: [],
     royaltiesRules: [
       (v) => !!v || 'Royalties is required',
       (v) => (v && v <= 50) || 'Royalties must be less than 50%',
@@ -286,6 +332,23 @@ export default {
         || (new RegExp('^[A-Za-z0-9_-]+$', 'u').test(v))
         || 'Use standard characters',
       ];
+      this.collectionNameRules = [
+        (v) => (v.length <= 40) || 'Collection name must be less than 40 characters',
+        (v) => (v === '')
+        || (new RegExp("^[A-Za-z0-9'?!.,:#áéíóúÁÉÍÓÚñÑäëïÖüÄËÏÖü_ -]+$", 'u').test(v))
+        || 'Use standard characters',
+      ];
+      this.collectionFamilyRules = [
+        (v) => (v.length <= 40) || 'Collection family must be less than 40 characters',
+        (v) => (v === '')
+        || (new RegExp("^[A-Za-z0-9'?!.,:#áéíóúÁÉÍÓÚñÑäëïÖüÄËÏÖü_ -]+$", 'u').test(v))
+        || 'Use standard characters',
+      ];
+      this.externalUrlRules = [
+        (v) => (v === '')
+        || (new RegExp('^(ftp|http|https)://[^ "]+$', 'u').test(v))
+        || 'External URL must be a valid link',
+      ];
       this.descriptionRules = [
         (v) => (v.length <= 300) || 'Description must be less than 300 characters',
         (v) => (v === '')
@@ -311,6 +374,13 @@ export default {
     async create() {
       this.loading = true;
       extendBorsh();
+      let collection;
+      if (this.collectionFamily !== '' || this.collectionName !== '') {
+        collection = {
+          name: this.collectionName,
+          family: this.collectionFamily,
+        };
+      }
       const metadata = {
         animation_url: undefined,
         creators: [
@@ -326,12 +396,13 @@ export default {
           }),
         ],
         description: this.description || '',
-        external_url: '',
+        external_url: this.externalUrl,
         image: this.file.name,
         name: this.name,
         symbol: '',
         sellerFeeBasisPoints: this.royalties * 100,
         attributes: this.getParsedAttributes(),
+        collection,
         properties: {
           category: 'image',
           files: [{ type: this.file.type, uri: this.file.name }],
