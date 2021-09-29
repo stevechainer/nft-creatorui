@@ -37,7 +37,8 @@
           <div>
             This is how much of each secondary sale will be paid out to the creators.<br>
             The minimum is <code>1%</code> and the maximum is <code>50%</code><br>
-            About creators split they are <code>1%</code> for NFT Creator and <code>99%</code> for the creator.
+            These royalties will be split in two, NFT Creator will receive <code>1%</code>
+            of the resale commission while the artist/minter will receive <code>99%</code> of the resale commission.
           </div>
         </li>
         <br>
