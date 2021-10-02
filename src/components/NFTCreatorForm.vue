@@ -323,13 +323,13 @@ export default {
       this.traitValueRules = [
         (v) => (v.length <= 20) || 'Trait value must be less than 20 characters',
         (v) => (v === '')
-        || (new RegExp('^[A-Za-z0-9_-]+$', 'u').test(v))
+        || (new RegExp('^[A-Za-z0-9_ -]+$', 'u').test(v))
         || 'Use standard characters',
       ];
       this.traitTypeRules = [
         (v) => (v.length <= 20) || 'Trait type must be less than 20 characters',
         (v) => (v === '')
-        || (new RegExp('^[A-Za-z0-9_-]+$', 'u').test(v))
+        || (new RegExp('^[A-Za-z0-9_ -]+$', 'u').test(v))
         || 'Use standard characters',
       ];
       this.collectionNameRules = [
