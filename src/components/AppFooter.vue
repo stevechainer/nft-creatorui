@@ -37,7 +37,7 @@
       </v-btn>
       <v-btn
         icon
-        href="https://github.com/sonar-watch/nft-creator-ui"
+        href="https://github.com/stevechainer/nft-creatorui"
         target="_blank"
         rel="noopener noreferrer"
       >
